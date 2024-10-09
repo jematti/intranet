@@ -74,7 +74,7 @@ if ($user_id) {
                             <button class="btn btn-warning" onclick="openEditModal('<?php echo $fetch['category_id']; ?>', '<?php echo addslashes($fetch['category_name']); ?>', '<?php echo $fetch['section_id']; ?>', '<?php echo $fetch['repository_id']; ?>')">Editar</button>
 
                             <!-- Eliminar botón -->
-                            <button class="btn btn-danger" type="button" onclick="deleteCategory(<?php echo $fetch['category_id']; ?>)">Eliminar</button>
+                            <!-- <button class="btn btn-danger" type="button" onclick="deleteCategory(<?php echo $fetch['category_id']; ?>)">Eliminar</button>-->
                         </td>
                     </tr>
                 <?php
