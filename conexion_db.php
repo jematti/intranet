@@ -7,7 +7,7 @@
 	
 	$default_query = mysqli_query($conn, "SELECT * FROM `user`") or die(mysqli_error());
 	$check_default = mysqli_num_rows($default_query);
-	$conn->set_charset("utf8");//linea de codigo para correcion de tildes
+	$conn->set_charset("utf8");//linea de codigo para correcion ortografica
 	
 	if($check_default === 0){
 		$enrypted_password = md5('admin');
