@@ -142,7 +142,7 @@ $repositories_query = mysqli_query($conn, "SELECT * FROM repositories") or die(m
                                     </div>
                                     <div class="form-group">
                                         <label for="password">Contraseña (dejar en blanco para mantener actual)</label>
-                                        <input type="password" name="password" class="form-control" id="password"/>
+                                        <input type="password" name="password" class="form-control" id="password" required/>
                                     </div>
                                     <div class="form-group">
                                         <label for="personal_email">Correo Personal</label>

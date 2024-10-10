@@ -81,6 +81,15 @@ $role_id = isset($_SESSION['role_id']) ? $_SESSION['role_id'] : null;
             <p class="text-muted nav-heading mt-4 mb-1"><span>Documentación</span></p>
             <ul class="navbar-nav flex-fill w-100 mb-2">
                 <li class="nav-item">
+                    <a class="nav-link" href="upload_document.php">
+                        <i class="fe fe-file fe-16"></i>
+                        <span class="ml-3 item-text">Subir Documentos</span>
+                    </a>
+                </li>
+            </ul>
+            <p class="text-muted nav-heading mt-4 mb-1"><span>Documentación</span></p>
+            <ul class="navbar-nav flex-fill w-100 mb-2">
+                <li class="nav-item">
                     <a class="nav-link" href="admin_documents.php">
                         <i class="fe fe-file fe-16"></i>
                         <span class="ml-3 item-text">Lista de Documentos</span>
