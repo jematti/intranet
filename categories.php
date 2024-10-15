@@ -35,7 +35,7 @@ if ($user_id) {
 
 <!-- contenido -->
 <main role="main" class="main-content">
-<br><br><br>
+    <br><br><br>
     <div id="content">
         <div class="alert alert-info">
             <h3>Categorías</h3>
@@ -47,22 +47,25 @@ if ($user_id) {
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
-                    <th>Sección</th>
-                    <th>Repositorio</th>
+                    <th>Unidad Organizacional</th>
+                    <th>Área organizacional</th>
                     <th>Acción</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
-                // Consultar categorías, secciones y repositorios
-                $query = mysqli_query($conn, "SELECT c.category_id, c.category_name, s.section_id, s.section_name, r.repository_id, r.repository_name 
+                // Consultar categorías, secciones y Área organizacional
+                $query = mysqli_query($conn, "SELECT c.category_id, c.category_name, c.status, s.section_id, s.section_name, r.repository_id, r.repository_name 
                                               FROM categories c 
                                               JOIN sections s ON c.section_id = s.section_id 
                                               JOIN repositories r ON s.repository_id = r.repository_id 
-                                              WHERE c.status = 1") or die(mysqli_error($conn));
+                                              WHERE c.status IN (0, 1)") or die(mysqli_error($conn));
                 
                 // Iterar sobre los resultados
                 while ($fetch = mysqli_fetch_array($query)) {
+                    // Determinar la clase y el texto del botón según el estado de la categoría
+                    $statusButtonClass = $fetch['status'] == 1 ? 'btn-danger' : 'btn-success';
+                    $statusButtonText = $fetch['status'] == 1 ? 'Deshabilitar' : 'Habilitar';
                 ?>
                     <tr class="del_category<?php echo $fetch['category_id'] ?>">
                         <td><?php echo $fetch['category_id'] ?></td>
@@ -70,11 +73,13 @@ if ($user_id) {
                         <td><?php echo $fetch['section_name'] ?></td>
                         <td><?php echo $fetch['repository_name'] ?></td>
                         <td>
+                            <!-- Botón de Habilitar/Deshabilitar -->
+                            <button class="btn <?php echo $statusButtonClass; ?>" type="button" onclick="confirmToggleCategoryStatus(<?php echo $fetch['category_id']; ?>, <?php echo $fetch['status']; ?>)">
+                                <?php echo $statusButtonText; ?>
+                            </button>
+
                             <!-- Editar botón -->
                             <button class="btn btn-warning" onclick="openEditModal('<?php echo $fetch['category_id']; ?>', '<?php echo addslashes($fetch['category_name']); ?>', '<?php echo $fetch['section_id']; ?>', '<?php echo $fetch['repository_id']; ?>')">Editar</button>
-
-                            <!-- Eliminar botón -->
-                            <!-- <button class="btn btn-danger" type="button" onclick="deleteCategory(<?php echo $fetch['category_id']; ?>)">Eliminar</button>-->
                         </td>
                     </tr>
                 <?php
@@ -82,26 +87,6 @@ if ($user_id) {
                 ?>
             </tbody>
         </table>
-    </div>
-
-    <!-- Modal para Confirmar Eliminación -->
-    <div class="modal fade" id="modal_confirm" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Sistema</h3>
-                </div>
-                <div class="modal-body">
-                    <center>
-                        <h4 class="text-danger">¿Está seguro de que desea eliminar esta categoría?</h4>
-                    </center>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-success" id="btn_yes">Continuar</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Modal para Agregar/Editar Categoría -->
@@ -119,15 +104,15 @@ if ($user_id) {
                             <input type="text" id="category_name" name="category_name" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label>Repositorio</label>
-                            <!-- Campo repositorio, deshabilitado y pre-rellenado con el valor del usuario -->
+                            <label>Área organizacional</label>
+                            <!-- Campo Área organizacional, deshabilitado y pre-rellenado con el valor del usuario -->
                             <input type="text" id="repository_name" class="form-control" value="<?php echo $repository_name; ?>" disabled>
                             <input type="hidden" id="repository_id" name="repository_id" value="<?php echo $repository_id; ?>">
                         </div>
                         <div class="form-group">
-                            <label>Sección</label>
+                            <label>Unidad Organizacional</label>
                             <select id="section_id" name="section_id" class="form-control" required>
-                                <option value="">Seleccione una sección</option>
+                                <option value="">Seleccione una Unidad Organizacional</option>
                             </select>
                         </div>
                     </div>
@@ -167,6 +152,26 @@ function loadSections(repository_id) {
     }
 }
 
+// Función para habilitar/deshabilitar categoría mediante AJAX
+function toggleCategoryStatus(categoryId, currentStatus) {
+    $.post('toggle_category_status.php', { category_id: categoryId, status: currentStatus }, function(response) {
+        if (response.success) {
+            // Recargar la página para reflejar el cambio o cambiar el botón dinámicamente
+            window.location.reload();
+        } else {
+            alert('Error al cambiar el estado de la categoría.');
+        }
+    }, 'json');
+}
+
+// Confirmar antes de habilitar/deshabilitar categoría
+function confirmToggleCategoryStatus(categoryId, currentStatus) {
+    const action = currentStatus === 1 ? 'deshabilitar' : 'habilitar';
+    if (confirm(`¿Estás seguro de que deseas ${action} esta categoría?`)) {
+        toggleCategoryStatus(categoryId, currentStatus);
+    }
+}
+
 // Abrir el modal para editar una categoría
 function openEditModal(category_id, category_name, section_id, repository_id) {
     document.getElementById('category_id').value = category_id;
@@ -182,15 +187,6 @@ function openEditModal(category_id, category_name, section_id, repository_id) {
 
     // Mostrar el modal de edición
     $('#form_modal').modal('show');
-}
-
-// Función para eliminar una categoría
-function deleteCategory(categoryId) {
-    if (confirm('¿Está seguro de que desea eliminar esta categoría?')) {
-        $.post('delete_category.php', { delete: true, category_id: categoryId }, function(response) {
-            window.location.reload();
-        });
-    }
 }
 </script>
 </body>

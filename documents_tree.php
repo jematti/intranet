@@ -38,8 +38,8 @@ include_once 'app/complements/header.php';
                     <div class="card-body">
                         <div class="accordion" id="documentAccordion">
                             <?php
-                            // Obtener todos los repositorios
-                            $query_repositories = mysqli_query($conn, "SELECT * FROM `repositories`");
+                            // Obtener todos los repositorios habilitados
+                            $query_repositories = mysqli_query($conn, "SELECT * FROM `repositories` WHERE `status` = 1");
 
                             while ($repository = mysqli_fetch_assoc($query_repositories)) {
                                 $repoId = $repository['repository_id'];
@@ -55,8 +55,8 @@ include_once 'app/complements/header.php';
                                     <div id='collapseRepo{$repoId}' class='collapse' aria-labelledby='headingRepo{$repoId}' data-parent='#documentAccordion'>
                                         <div class='card-body'>";
 
-                                        // Obtener secciones por repositorio
-                                        $query_sections = mysqli_query($conn, "SELECT * FROM `sections` WHERE `repository_id` = {$repoId}");
+                                        // Obtener secciones habilitadas por repositorio
+                                        $query_sections = mysqli_query($conn, "SELECT * FROM `sections` WHERE `repository_id` = {$repoId} AND `status` = 1");
                                         while ($section = mysqli_fetch_assoc($query_sections)) {
                                             $sectionId = $section['section_id'];
                                             echo "
@@ -67,8 +67,8 @@ include_once 'app/complements/header.php';
                                                 <div id='collapseSection{$sectionId}' class='collapse' data-parent='#collapseRepo{$repoId}'>
                                                     <div class='ml-4'>";
 
-                                                    // Obtener categorías por sección
-                                                    $query_categories = mysqli_query($conn, "SELECT * FROM `categories` WHERE `section_id` = {$sectionId}");
+                                                    // Obtener categorías habilitadas por sección
+                                                    $query_categories = mysqli_query($conn, "SELECT * FROM `categories` WHERE `section_id` = {$sectionId} AND `status` = 1");
                                                     while ($category = mysqli_fetch_assoc($query_categories)) {
                                                         $categoryId = $category['category_id'];
                                                         echo "
@@ -87,7 +87,7 @@ include_once 'app/complements/header.php';
                                                                     </thead>
                                                                     <tbody>";
 
-                                                                // Obtener archivos por categoría solo si están activos
+                                                                // Obtener archivos habilitados por categoría
                                                                 $query_files = mysqli_query($conn, "SELECT * FROM `storage` WHERE `category_id` = {$categoryId} AND `status` = 1");
                                                                 if (mysqli_num_rows($query_files) > 0) {
                                                                     while ($file = mysqli_fetch_assoc($query_files)) {
@@ -141,10 +141,10 @@ include_once 'app/complements/footer.php';
 <!-- Scripts -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Iniciamos el componente de acordeón de Bootstrap
+        // Iniciar el componente de acordeón de Bootstrap
         $('.collapse').collapse();
 
-        // Cambiar ícono de chevron cuando se colapsa o expande
+        // Cambiar el ícono de chevron cuando se colapsa o expande
         $('.collapse').on('shown.bs.collapse', function () {
             $(this).parent().find('.fas').removeClass('fa-chevron-right').addClass('fa-chevron-down');
         }).on('hidden.bs.collapse', function () {

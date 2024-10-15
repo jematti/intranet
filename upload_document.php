@@ -1,5 +1,4 @@
 <?php
-
 require 'app/funcionts/admin/validator.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
 include_once 'app/complements/header.php';
@@ -37,14 +36,9 @@ include_once 'app/complements/header.php';
                         ) or die(mysqli_error($conn));
                         
                         $fetch = mysqli_fetch_array($query);
-                    
                         ?>
                         <div class="row">
                             <div class="col-md-6">
-                                <!-- <div class="form-group mb-3">
-                                    <label for="employee_no">ID Usuario</label>
-                                    <input type="text" id="employee_no" class="form-control" value="<?php echo $fetch['user_id'] ?>" readonly>
-                                </div> -->
                                 <div class="form-group mb-3">
                                     <label for="employee_name">Nombre</label>
                                     <input type="text" id="employee_name" class="form-control" value="<?php echo $fetch['firstname'] . " " . $fetch['lastname'] ?>" readonly>
@@ -58,7 +52,7 @@ include_once 'app/complements/header.php';
                                     <input type="text" id="employee_role" class="form-control" value="<?php echo $fetch['role_name']; ?>" readonly>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="employee_repository">Repositorio</label>
+                                    <label for="employee_repository">Área organizacional</label>
                                     <input type="text" id="employee_repository" class="form-control" value="<?php echo $fetch['repository_name']; ?>" readonly>
                                 </div>
                             </div>
@@ -69,20 +63,20 @@ include_once 'app/complements/header.php';
                                     </div>
                                     <div class="card-body">
                                         <form action="save_file.php" method="post" enctype="multipart/form-data">
-                                            <!-- Mostrar repositorio del usuario (no editable) -->
+                                            <!-- Mostrar Área organizacional del usuario (no editable) -->
                                             <div class="form-group">
-                                                <label for="repository_name">Repositorio</label>
+                                                <label for="repository_name">Área organizacional</label>
                                                 <input type="text" id="repository_name" class="form-control" value="<?php echo $fetch['repository_name']; ?>" readonly>
                                                 <input type="hidden" name="repository_id" value="<?php echo $fetch['repository_id']; ?>">
                                             </div>
 
-                                           <!-- Selector de Sección (obligatorio) -->
+                                            <!-- Selector de Unidad Organizacional (obligatorio), solo Unidad Organizacional activas -->
                                             <div class="form-group">
-                                                <label for="section_id">Sección</label>
+                                                <label for="section_id">Unidad Organizacional</label>
                                                 <select class="form-control" id="section_id" name="section_id" required>
-                                                    <option value="">Seleccione una Sección</option>
+                                                    <option value="">Seleccione una Unidad Organizacional</option>
                                                     <?php
-                                                    $section_query = mysqli_query($conn, "SELECT * FROM `sections` WHERE `repository_id` = '{$fetch['repository_id']}'") or die(mysqli_error($conn));
+                                                    $section_query = mysqli_query($conn, "SELECT * FROM `sections` WHERE `repository_id` = '{$fetch['repository_id']}' AND `status` = 1") or die(mysqli_error($conn));
                                                     while ($section = mysqli_fetch_array($section_query)) {
                                                         echo "<option value='" . $section['section_id'] . "'>" . $section['section_name'] . "</option>";
                                                     }
@@ -90,7 +84,7 @@ include_once 'app/complements/header.php';
                                                 </select>
                                             </div>
 
-                                            <!-- Selector de Categoría (obligatorio) -->
+                                            <!-- Selector de Categoría (obligatorio), solo categorías activas -->
                                             <div class="form-group">
                                                 <label for="category_id">Categoría</label>
                                                 <select class="form-control" id="category_id" name="category_id" required>
@@ -199,112 +193,28 @@ include_once 'app/complements/footer.php';
 ?>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Delegación del evento de clic en los botones de estado
-    document.querySelector('#file-table-body').addEventListener('click', function(event) {
-        const target = event.target;
-        if (target.classList.contains('toggle-status-btn')) {
-            const storeId = target.getAttribute('data-id');
-            toggleFileStatus(storeId, target);
-        }
-    });
-});
-
-function toggleFileStatus(storeId, buttonElement) {
-    // Realiza una solicitud AJAX para cambiar el estado del archivo
-    fetch(`status_document.php?store_id=${storeId}`, {
-        method: 'POST'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Cambia el estado del botón basado en el nuevo estado
-            if (data.newStatus === 1) {
-                buttonElement.classList.remove('btn-success');
-                buttonElement.classList.add('btn-danger');
-                buttonElement.textContent = 'Deshabilitar';
-            } else {
-                buttonElement.classList.remove('btn-danger');
-                buttonElement.classList.add('btn-success');
-                buttonElement.textContent = 'Habilitar';
-            }
-        } else {
-            alert('Error al cambiar el estado del archivo.');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error al cambiar el estado del archivo.');
-    });
-}
-
-</script>
-
-<script>
+// Función para cargar las categorías basadas en la sección seleccionada
 $(document).ready(function(){
     $('#section_id').change(function(){
         var section_id = $(this).val();
         $.ajax({
-            url: 'get_categories.php', // Archivo que procesará la solicitud AJAX
+            url: 'get_categories.php',
             type: 'post',
             data: {section_id: section_id},
             dataType: 'json',
             success: function(response){
                 var len = response.length;
-                $("#category_id").empty(); // Limpiar el selector de categorías
+                $("#category_id").empty();
                 $("#category_id").append("<option value=''>Seleccione una Categoría</option>");
                 for(var i = 0; i < len; i++){
-                    var id = response[i]['category_id'];
-                    var name = response[i]['category_name'];
-                    $("#category_id").append("<option value='"+id+"'>"+name+"</option>");
+                    if (response[i]['status'] == 1) { // Verificar si la categoría está activa
+                        var id = response[i]['category_id'];
+                        var name = response[i]['category_name'];
+                        $("#category_id").append("<option value='"+id+"'>"+name+"</option>");
+                    }
                 }
             }
         });
     });
 });
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Delegación del evento de clic en los botones de estado
-    document.querySelector('#file-table-body').addEventListener('click', function(event) {
-        const target = event.target;
-        if (target.classList.contains('toggle-status-btn')) {
-            const storeId = target.getAttribute('data-id');
-            toggleFileStatus(storeId, target);
-        }
-    });
-});
-
-function toggleFileStatus(storeId, buttonElement) {
-    // Realiza una solicitud AJAX para cambiar el estado del archivo
-    fetch('status_document.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `store_id=${storeId}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Cambia el estado del botón basado en el nuevo estado
-            if (data.newStatus === 1) {
-                buttonElement.classList.remove('btn-success');
-                buttonElement.classList.add('btn-danger');
-                buttonElement.textContent = 'Deshabilitar';
-            } else {
-                buttonElement.classList.remove('btn-danger');
-                buttonElement.classList.add('btn-success');
-                buttonElement.textContent = 'Habilitar';
-            }
-        } else {
-            alert('Error al cambiar el estado del archivo.');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error al cambiar el estado del archivo.');
-    });
-}
-
-
 </script>

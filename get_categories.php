@@ -1,16 +1,26 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
 
 if (isset($_POST['section_id'])) {
     $section_id = $_POST['section_id'];
-    $query = mysqli_query($conn, "SELECT * FROM `categories` WHERE `section_id` = '$section_id'") or die(mysqli_error($conn));
+
+    // Consulta para obtener las categorías activas asociadas a la sección
+    $query = "SELECT category_id, category_name, status 
+              FROM categories 
+              WHERE section_id = '$section_id' 
+              AND status = 1"; // Asegurarse de que las categorías estén activas (status = 1)
+
+    $result = mysqli_query($conn, $query);
+
     $categories = [];
-    while ($row = mysqli_fetch_array($query)) {
-        $categories[] = [
-            'category_id' => $row['category_id'],
-            'category_name' => $row['category_name']
-        ];
+
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $categories[] = $row; // Añadir cada categoría al array
+        }
     }
-    echo json_encode($categories); // Devolver los resultados en formato JSON
+
+    // Devolver los datos en formato JSON
+    echo json_encode($categories);
 }
 ?>

@@ -49,13 +49,13 @@ $role_id = isset($_SESSION['role_id']) ? $_SESSION['role_id'] : null;
                 <li class="nav-item">
                     <a class="nav-link" href="repositories.php">
                         <i class="fe fe-calendar fe-16"></i>
-                        <span class="ml-3 item-text">Repositorios</span>
+                        <span class="ml-3 item-text">Área organizacional</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="sections.php">
                         <i class="fe fe-calendar fe-16"></i>
-                        <span class="ml-3 item-text">Secciones</span>
+                        <span class="ml-3 item-text">Unidad Organizacional</span>
                     </a>
                 </li>
                 <li class="nav-item">
