@@ -42,6 +42,16 @@ CREATE TABLE IF NOT EXISTS `role_permissions` (
   FOREIGN KEY (`permission_id`) REFERENCES `permissions`(`permission_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- Crear tabla `sections` con relación a `repositories`
+CREATE TABLE IF NOT EXISTS `sections` (
+  `section_id` int(11) NOT NULL AUTO_INCREMENT,
+  `section_name` varchar(100) NOT NULL,
+  `repository_id` int(11) NOT NULL, -- Relación con la tabla repositories
+  `status` TINYINT(1) NOT NULL DEFAULT '1', -- 1 para activo, 0 para inactivo
+  PRIMARY KEY (`section_id`),
+  FOREIGN KEY (`repository_id`) REFERENCES `repositories`(`repository_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 -- Crear tabla unificada `user` que incluye administradores y empleados
 CREATE TABLE IF NOT EXISTS `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -54,6 +64,8 @@ CREATE TABLE IF NOT EXISTS `user` (
   `personal_email` varchar(100) DEFAULT NULL, -- Correo personal
   `phone` varchar(15) DEFAULT NULL, -- Celular
   `cell_phone` varchar(15) DEFAULT NULL, -- Celular
+  `landline_phone` varchar(15) DEFAULT NULL, -- Teléfono fijo del usuario 
+  `repository_phone` varchar(15) DEFAULT NULL, -- Teléfono fijo del repositorio
   `birth_date` DATE DEFAULT NULL, -- Fecha de nacimiento
   `address` varchar(255) DEFAULT NULL,
   `status` varchar(20) NOT NULL,
@@ -61,22 +73,17 @@ CREATE TABLE IF NOT EXISTS `user` (
   `active_status` TINYINT(1) NOT NULL DEFAULT '1', -- 1 para activo, 0 para inactivo
   `position_id` int(11) DEFAULT NULL, -- Relación con la tabla positions (si es empleado)
   `repository_id` int(11) DEFAULT NULL, -- Relación con la tabla repositories (si es empleado)
+  `section_id` int(11) DEFAULT NULL, -- Relación con la tabla sections (se añade el campo para la sección)
   `role_id` int(11) NOT NULL, -- Relación con la tabla roles
   PRIMARY KEY (`user_id`),
   FOREIGN KEY (`position_id`) REFERENCES `positions`(`position_id`) ON DELETE SET NULL,
   FOREIGN KEY (`repository_id`) REFERENCES `repositories`(`repository_id`) ON DELETE SET NULL,
+  FOREIGN KEY (`section_id`) REFERENCES `sections`(`section_id`) ON DELETE SET NULL,
   FOREIGN KEY (`role_id`) REFERENCES `roles`(`role_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Crear tabla `sections` con relación a `repositories`
-CREATE TABLE IF NOT EXISTS `sections` (
-  `section_id` int(11) NOT NULL AUTO_INCREMENT,
-  `section_name` varchar(100) NOT NULL,
-  `repository_id` int(11) NOT NULL, -- Relación con la tabla repositories
-  `status` TINYINT(1) NOT NULL DEFAULT '1', -- 1 para activo, 0 para inactivo
-  PRIMARY KEY (`section_id`),
-  FOREIGN KEY (`repository_id`) REFERENCES `repositories`(`repository_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
 
 -- Crear tabla `categories` con referencia a `sections`
 CREATE TABLE IF NOT EXISTS `categories` (
@@ -173,7 +180,7 @@ INSERT INTO `positions` (`position_id`, `position_name`) VALUES
 
 -- Insertar datos de ejemplo en `repositories`
 INSERT INTO `repositories` (`repository_id`, `repository_name`, `building`, `department`, `status` ) VALUES
-(1, 'Fundación Cultural del Banco Central de Bolivia', 'La Paz', 'La Paz',1),
+(1, 'Consejo de Administración y Presidencia', 'La Paz', 'La Paz',1),
 (2, 'Archivo y Bibliotecas Nacionales de Bolivia', 'Sucre', 'Chuquisaca',1),
 (3, 'Casa de la Libertad', 'Sucre', 'Chuquisaca',1),
 (4, 'Casa de la Moneda', 'Potosi', 'Potosi',1),
@@ -188,7 +195,8 @@ INSERT INTO `repositories` (`repository_id`, `repository_name`, `building`, `dep
 INSERT INTO `roles` (`role_name`) VALUES
 ('Super Admin'),
 ('Administrador de Página'),
-('Empleado');
+('Empleado'),
+('Administrador Repositorio');
 
 -- Insertar permisos de ejemplo
 INSERT INTO `permissions` (`permission_name`) VALUES
@@ -219,72 +227,68 @@ INSERT INTO `sections` (`section_name`, `repository_id`, `status`) VALUES
 ('Unidad Nacional de Gestión Cultural', 1, 1),
 ('Unidad Nacional de Gestión de Infraestructura', 1, 1),
 ('Unidad Nacional de Administración y Finanzas', 1, 1),
-('Recursos Humanos', 1, 1),
-('Administración', 1, 1),
+('Sección de Recursos Humanos', 1, 1),
+('Sub Unidad Nacional Administrativa', 1, 1),
 ('Auditoria Interna', 1, 1),
-('Museo Fernando Montes', 1, 1);
+('Museo Fernando Montes', 1, 1),
+('Sección de Sistemas', 1, 1),
+('Sección de Contratación', 1, 1),
+('Sub Unidad Nacional Financiera', 1, 1);
 
-
-
-
--- Insertar usuarios de prueba en `user`
-INSERT INTO `user` (`ci`, `firstname`, `lastname`, `username`, `password`, `email`, `phone`, `address`, `status`, `active_status`, `role_id`, `position_id`, `repository_id`)
+INSERT INTO `user` (`ci`, `firstname`, `lastname`, `username`, `password`, `email`, `phone`, `cell_phone`, `landline_phone`, `repository_phone`, `address`, `status`, `active_status`, `role_id`, `position_id`, `repository_id`, `section_id`)
 VALUES
-('6799225', 'Adrian', 'Villarreal', '6799225', MD5('6799225'), 'adrian@empresa.com', '1402', '', 'active', 1, 2, 1, 1), -- Admin Pagina
-('4796382', 'Adriana', 'Sandalio Viscarra', '4796382', MD5('4796382'), 'adriana@empresa.com', '1504', '', 'active', 1, 3, 2, 1), -- Empleado
-('4922527', 'Angela', 'Aduviri Arroyo', '4922527', MD5('4922527'), 'angela@empresa.com', '1104', '', 'active', 1, 3, 3, 1), -- Empleado
-('4329603', 'Beatriz Lidia', 'Mamani Abelo', '4329603', MD5('4329603'), 'beatriz@empresa.com', '1308', '', 'active', 1, 2, 4, 1), -- Admin Pagina
-('3407802', 'Carola', 'Gutierrez Soto', '3407802', MD5('3407802'), 'carola@empresa.com', '1308', '', 'active', 1, 3, 5, 1), -- Empleado
-('2682167', 'Cristobal', 'Apaza Bautista', '2682167', MD5('2682167'), 'cristobal@empresa.com', '1321', '', 'active', 1, 3, 6, 1), -- Empleado
-('6736666', 'Daniel Sergio', 'Aramayo Villarroel', '6736666', MD5('6736666'), 'daniel@empresa.com', '1328', '', 'active', 1, 3, 7, 1), -- Empleado
-('3358957', 'David', 'Aruquipa Pérez', '3358957', MD5('3358957'), 'david@empresa.com', '1501', '', 'active', 1, 3, 8, 1), -- Empleado
-('6190120', 'Denisse', 'Velásquez Silva', '6190120', MD5('6190120'), 'denisse@empresa.com', '0', '', 'active', 1, 3, 9, 9), -- Empleado
-('6985867', 'Elian', 'Álvarez Gómez', '6985867', MD5('6985867'), 'elian@empresa.com', '1205', '', 'active', 1, 3, 10, 1), -- Empleado
-('3423767', 'Erika', 'Gómez', '3423767', MD5('3423767'), 'erika@empresa.com', '1403', '', 'active', 1, 3, 11, 1), -- Empleado
-('7050731', 'Estefani', 'Huiza Fernández', '7050731', MD5('7050731'), 'estefani@empresa.com', '1322', '', 'active', 1, 3, 12, 1), -- Empleado
-('3325512', 'Estela', 'Ojeda Loza', '3325512', MD5('3325512'), 'estela@empresa.com', '1327', '', 'active', 1, 3, 13, 1), -- Empleado
-('2689803', 'Eustaquio', 'Vera Copa', '2689803', MD5('2689803'), 'eustaquio@empresa.com', '1102', '', 'active', 1, 3, 14, 1), -- Empleado
-('6123695', 'Evelin', 'Troche Espinoza', '6123695', MD5('6123695'), 'evelin@empresa.com', '1204', '', 'active', 1, 3, 15, 1), -- Empleado
-('6876773', 'Franco', 'Villatarco Zambrana', '6876773', MD5('6876773'), 'franco@empresa.com', '1320', '', 'active', 1, 3, 16, 1), -- Empleado
-('7008958', 'Gabriela', 'Fuentes Ramos', '7008958', MD5('7008958'), 'gabriela@empresa.com', '1325', '', 'active', 1, 2, 17, 1), -- Admin Pagina
-('2543742', 'Grover', 'Choque Quispe', '2543742', MD5('2543742'), 'grover@empresa.com', '0', '', 'active', 1, 3, 18, 9), -- Empleado
-('5480490', 'Guadalupe', 'Chavez Choque', '5480490', MD5('5480490'), 'guadalupe@empresa.com', '1601', '', 'active', 1, 3, 19, 1), -- Empleado
-('3462509', 'Hector', 'Sempertegui Alvarez', '3462509', MD5('3462509'), 'hector@empresa.com', '1313', '', 'active', 1, 3, 20, 1), -- Empleado
-('4898121', 'Hernan Sandro', 'Aquino Churqui', '4898121', MD5('4898121'), 'hernan@empresa.com', '1306', '', 'active', 1, 3, 21, 1), -- Empleado
-('5989585', 'Janela Ingrid', 'Vargas Vasquez', '5989585', MD5('5989585'), 'janela@empresa.com', '0', '', 'active', 1, 3, 22, 1), -- Empleado
-('8324905', 'Javier Edson', 'Zapana', '8324905', MD5('8324905'), 'javier@empresa.com', '1312', 'La Paz Bolivia', 'active', 1, 1, 23, 1), -- ADMIN
-('3487543', 'Juan', 'Ramos', '3487543', MD5('3487543'), 'juan@empresa.com', '1503', '', 'active', 1, 3, 24, 1), -- Empleado
-('9209737', 'Karina', 'Saravia Flores', '9209737', MD5('9209737'), 'karina@empresa.com', '1303', '', 'active', 1, 2, 25, 1), -- Admin Pagina
-('9070081', 'Katerine', 'Isidro Queso', '9070081', MD5('9070081'), 'katerine@empresa.com', '1202', '', 'active', 1, 2, 26, 1), -- Admin Pagina
-('5762453', 'Luis Alberto', 'Fernandez Orellana', '5762453', MD5('5762453'), 'luis.alberto@empresa.com', '1311', '', 'active', 1, 2, 27, 1), -- Empleado
-('4791448', 'Luis', 'Arequipa Apaza', '4791448', MD5('4791448'), 'luis.arequipa@empresa.com', '1405', '', 'active', 1, 2, 28, 1), -- Admin Pagina
-('4909891', 'Luis Daniel', 'Amezaga Bejarano', '4909891', MD5('4909891'), 'luis.daniel@empresa.com', '1602', '', 'active', 1, 3, 29, 1), -- Empleado
-('2220126', 'Luis', 'Oporto Ordoñez', '2220126', MD5('2220126'), 'luis.oporto@empresa.com', '1101', '', 'active', 1, 3, 30, 1), -- Empleado
-('4741713', 'Mabel', 'Belzu García', '4741713', MD5('4741713'), 'mabel@empresa.com', '1404', '', 'active', 1, 3, 31, 1), -- Empleado
-('2630284', 'Magali', 'Macias Bohorquez', '2630284', MD5('2630284'), 'magali@empresa.com', '1304', '', 'active', 1, 3, 32, 1), -- Empleado
-('5078422', 'Magali', 'Uribe García', '5078422', MD5('5078422'), 'magali.uribe@empresa.com', '1323', '', 'active', 1, 3, 33, 1), -- Empleado
-('6185880', 'Maria Alejandra', 'Cornejo Valdez', '6185880', MD5('6185880'), 'maria.alejandra@empresa.com', '0', '', 'active', 1, 3, 34, 9), -- Empleado
-('6081183', 'Maria Delina', 'Carvajal Duran', '6081183', MD5('6081183'), 'maria.delina@empresa.com', '1309', '', 'active', 1, 3, 35, 1), -- Admin Pagina
-('4376835', 'Maria Guadalupe', 'Quintanilla Quelca', '4376835', MD5('4376835'), 'maria.guadalupe@empresa.com', '1319', '', 'active', 1, 3, 36, 1), -- Empleado
-('3375385', 'Mariana', 'Vargas Toro', '3375385', MD5('3375385'), 'mariana@empresa.com', '0', '', 'active', 1, 3, 37, 9), -- Empleado
-('5974311', 'Marianela', 'España Mita', '5974311', MD5('5974311'), 'marianela@empresa.com', '0', '', 'active', 1, 3, 38, 9), -- Empleado
-('4844721', 'Mario', 'Marca Honorio', '4844721', MD5('4844721'), 'mario@empresa.com', '1315', '', 'active', 1, 3, 39, 1), -- Empleado
-('3484596', 'Marisabel', 'Zubieta Salas', '3484596', MD5('3484596'), 'marisabel@empresa.com', '1317', '', 'active', 1, 3, 40, 1), -- Empleado
-('4878229', 'Mary Carmen', 'Molina Ergueta', '4878229', MD5('4878229'), 'mary.carmen@empresa.com', '1504', '', 'active', 1, 3, 41, 1), -- Empleado
-('6144712', 'Mauricio Fernando', 'Castillo Arratia', '6144712', MD5('6144712'), 'mauricio@empresa.com', '1603', '', 'active', 1, 3, 42, 1), -- Empleado
-('6783260', 'Melina Maribel', 'Maldonado Rios', '6783260', MD5('6783260'), 'melina@empresa.com', '1602', '', 'active', 1, 3, 43, 1), -- Empleado
-('2150176', 'Pablo Ernesto', 'Mansilla Salinas', '2150176', MD5('2150176'), 'pablo@empresa.com', '1603', '', 'active', 1, 3, 44, 1), -- Empleado
-('8412357', 'Patricia', 'Humana Lluta', '8412357', MD5('8412357'), 'patricia@empresa.com', '0', '', 'active', 1, 3, 45, 1), -- Empleado
-('3336972', 'Pavel', 'Pérez Armata', '3336972', MD5('3336972'), 'pavel@empresa.com', '1201', '', 'active', 1, 3, 46, 1), -- Empleado
-('4262272', 'Ramiro', 'Marquez Gallardo', '4262272', MD5('4262272'), 'ramiro@empresa.com', '1604', '', 'active', 1, 3, 47, 1), -- Empleado
-('4842254', 'Reyna', 'Roque Ortega', '4842254', MD5('4842254'), 'reyna@empresa.com', '0', '', 'active', 1, 3, 48, 1), -- Empleado
-('2058080', 'Ricardo', 'Aguilar Asin', '2058080', MD5('2058080'), 'ricardo@empresa.com', '1105', '', 'active', 1, 2, 49, 1), -- Admin Pagina
-('4918718', 'Rita Lizeth', 'Quiroz Suarez', '4918718', MD5('4918718'), 'rita@empresa.com', '1102', '', 'active', 1, 3, 50, 1), -- Empleado
-('3251519', 'Rolando', 'Paniagua Espinoza', '3251519', MD5('3251519'), 'rolando@empresa.com', '1401', '', 'active', 1, 3, 51, 1), -- Empleado
-('8264230', 'Rosa Adelaida', 'Quispe Calle', '8264230', MD5('8264230'), 'rosa@empresa.com', '1307', '', 'active', 1, 2, 52, 1), -- Admin Pagina
-('6965732', 'Silvia', 'Condori Mamani', '6965732', MD5('6965732'), 'silvia@empresa.com', '1322', '', 'active', 1, 3, 53, 1), -- Empleado
-('4985716', 'Silvia', 'Huanca Calle', '4985716', MD5('4985716'), 'silvia.huanca@empresa.com', '1316', '', 'active', 1, 3, 54, 1), -- Empleado
-('4831236', 'Yecid Gustavo', 'Sanchez Velasco', '4831236', MD5('4831236'), 'yecid@empresa.com', '1310', '', 'active', 1, 3, 56, 1), -- Empleado
-('4848702', 'Yussela Saleth', 'Goyzueta Ramos', '4848702', MD5('4848702'), 'yussela@empresa.com', '1301', '', 'active', 1, 3, 57, 1), -- Empleado
-('6102450', 'Waldo', 'Vaca Alvarez', '6102450', MD5('6102450'), 'waldo@empresa.com', '1407', '', 'active', 1, 3, 58, 1); -- Empleado
+('6799225', 'Adrian', 'Villarreal', '6799225', MD5('6799225'), 'adrian@empresa.com', '1402', NULL, NULL, NULL, '', 'active', 1, 2, 1, 1, 4),
+('4796382', 'Adriana', 'Sandalio Viscarra', '4796382', MD5('4796382'), 'adriana@empresa.com', '1504', NULL, NULL, NULL, '', 'active', 1, 3, 2, 1, 5),
+('4922527', 'Angela', 'Aduviri Arroyo', '4922527', MD5('4922527'), 'angela@empresa.com', '1104', NULL, NULL, NULL, '', 'active', 1, 3, 3, 1, 1),
+('4329603', 'Beatriz Lidia', 'Mamani Abelo', '4329603', MD5('4329603'), 'beatriz@empresa.com', '1308', NULL, NULL, NULL, '', 'active', 1, 2, 4, 1, 8),
+('3407802', 'Carola', 'Gutierrez Soto', '3407802', MD5('3407802'), 'carola@empresa.com', '1308', NULL, NULL, NULL, '', 'active', 1, 3, 5, 1, 10),
+('2682167', 'Cristobal', 'Apaza Bautista', '2682167', MD5('2682167'), 'cristobal@empresa.com', '1321', NULL, NULL, NULL, '', 'active', 1, 3, 6, 1, 10),
+('6736666', 'Daniel Sergio', 'Aramayo Villarroel', '6736666', MD5('6736666'), 'daniel@empresa.com', '1328', NULL, NULL, NULL, '', 'active', 1, 3, 7, 1, 11),
+('3358957', 'David', 'Aruquipa Pérez', '3358957', MD5('3358957'), 'david@empresa.com', '1501', NULL, NULL, NULL, '', 'active', 1, 3, 8, 1, 5),
+('6190120', 'Denisse', 'Velásquez Silva', '6190120', MD5('6190120'), 'denisse@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 9, 9, 5),
+('6985867', 'Elian', 'Álvarez Gómez', '6985867', MD5('6985867'), 'elian@empresa.com', '1205', NULL, NULL, NULL, '', 'active', 1, 3, 10, 1, 3),
+('7050731', 'Estefani', 'Huiza Fernández', '7050731', MD5('7050731'), 'estefani@empresa.com', '1322', NULL, NULL, NULL, '', 'active', 1, 3, 12, 1, 1),
+('3325512', 'Estela', 'Ojeda Loza', '3325512', MD5('3325512'), 'estela@empresa.com', '1327', NULL, NULL, NULL, '', 'active', 1, 3, 13, 1, 10),
+('2689803', 'Eustaquio', 'Vera Copa', '2689803', MD5('2689803'), 'eustaquio@empresa.com', '1102', NULL, NULL, NULL, '', 'active', 1, 3, 14, 1, 1),
+('6123695', 'Evelin', 'Troche Espinoza', '6123695', MD5('6123695'), 'evelin@empresa.com', '1204', NULL, NULL, NULL, '', 'active', 1, 3, 15, 1, 3),
+('6876773', 'Franco', 'Villatarco Zambrana', '6876773', MD5('6876773'), 'franco@empresa.com', '1320', NULL, NULL, NULL, '', 'active', 1, 3, 16, 1, 9),
+('7008958', 'Gabriela', 'Fuentes Ramos', '7008958', MD5('7008958'), 'gabriela@empresa.com', '1325', NULL, NULL, NULL, '', 'active', 1, 2, 17, 1, 10),
+('2543742', 'Grover', 'Choque Quispe', '2543742', MD5('2543742'), 'grover@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 18, 9, 5),
+('3462509', 'Hector', 'Sempertegui Alvarez', '3462509', MD5('3462509'), 'hector@empresa.com', '1313', NULL, NULL, NULL, '', 'active', 1, 3, 20, 1, 14),
+('4898121', 'Hernan Sandro', 'Aquino Churqui', '4898121', MD5('4898121'), 'hernan@empresa.com', '1306', NULL, NULL, NULL, '', 'active', 1, 3, 21, 1, 9),
+('5989585', 'Janela Ingrid', 'Vargas Vasquez', '5989585', MD5('5989585'), 'janela@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 22, 1, 5),
+('8324905', 'Javier Edson', 'Zapana', '8324905', MD5('8324905'), 'javier@empresa.com', '1312', NULL, NULL, NULL, 'La Paz Bolivia', 'active', 1, 1, 23, 1, 1),
+('3487543', 'Juan', 'Ramos', '3487543', MD5('3487543'), 'juan@empresa.com', '1503', NULL, NULL, NULL, '', 'active', 1, 3, 24, 1, 1),
+('9209737', 'Karina', 'Saravia Flores', '9209737', MD5('9209737'), 'karina@empresa.com', '1303', NULL, NULL, NULL, '', 'active', 1, 2, 25, 1, 7),
+('9070081', 'Katerine', 'Isidro Queso', '9070081', MD5('9070081'), 'katerine@empresa.com', '1202', NULL, NULL, NULL, '', 'active', 1, 2, 26, 1, 3),
+('5762453', 'Luis Alberto', 'Fernandez Orellana', '5762453', MD5('5762453'), 'luis.alberto@empresa.com', '1311', NULL, NULL, NULL, '', 'active', 1, 1, 27, 1, 12),
+('4791448', 'Luis', 'Arequipa Apaza', '4791448', MD5('4791448'), 'luis.arequipa@empresa.com', '1405', NULL, NULL, NULL, '', 'active', 1, 2, 28, 1, 3),
+('4909891', 'Luis Daniel', 'Amezaga Bejarano', '4909891', MD5('4909891'), 'luis.daniel@empresa.com', '1602', NULL, NULL, NULL, '', 'active', 1, 3, 29, 1, 6),
+('2220126', 'Luis', 'Oporto Ordoñez', '2220126', MD5('2220126'), 'luis.oporto@empresa.com', '1101', NULL, NULL, NULL, '', 'active', 1, 3, 30, 1, 1),
+('4741713', 'Mabel', 'Belzu García', '4741713', MD5('4741713'), 'mabel@empresa.com', '1404', NULL, NULL, NULL, '', 'active', 1, 3, 31, 1, 4),
+('2630284', 'Magali', 'Macias Bohorquez', '2630284', MD5('2630284'), 'magali@empresa.com', '1304', NULL, NULL, NULL, '', 'active', 1, 3, 32, 1, 8),
+('5078422', 'Magali', 'Uribe García', '5078422', MD5('5078422'), 'magali.uribe@empresa.com', '1323', NULL, NULL, NULL, '', 'active', 1, 3, 33, 1, 10),
+('6185880', 'Maria Alejandra', 'Cornejo Valdez', '5078422', MD5('6185880'), 'maria.alejandra@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 34, 9, 5),
+('6081183', 'Maria Delina', 'Carvajal Duran', '5078422', MD5('6081183'), 'maria.delina@empresa.com', '1309', NULL, NULL, NULL, '', 'active', 1, 3, 35, 1, 8),
+('4376835', 'Maria Guadalupe', 'Quintanilla Quelca', '5078422', MD5('4376835'), 'maria.guadalupe@empresa.com', '1319', NULL, NULL, NULL, '', 'active', 1, 3, 36, 1, 13),
+('3375385', 'Mariana', 'Vargas Toro','3375385', MD5('3375385'), 'mariana@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 37, 9, 5),
+('5974311', 'Marianela', 'España Mita','5974311', MD5('5974311'), 'marianela@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 38, 9, 5),
+('4844721', 'Mario', 'Marca Honorio', '4844721', MD5('4844721'), 'mario@empresa.com', '1315', NULL, NULL, NULL, '', 'active', 1, 3, 39, 1, 14),
+('3484596', 'Marisabel', 'Zubieta Salas','3484596', MD5('3484596'), 'marisabel@empresa.com', '1317', NULL, NULL, NULL, '', 'active', 1, 3, 40, 1, 7),
+('4878229', 'Mary Carmen', 'Molina Ergueta','4878229', MD5('4878229'), 'mary.carmen@empresa.com', '1504', NULL, NULL, NULL, '', 'active', 1, 3, 41, 1, 5),
+('6144712', 'Mauricio Fernando', 'Castillo Arratia', '6144712', MD5('6144712'), 'mauricio@empresa.com', '1603', NULL, NULL, NULL, '', 'active', 1, 3, 42, 1, 6),
+('6783260', 'Melina Maribel', 'Maldonado Rios', '6783260', MD5('6783260'), 'melina@empresa.com', '1602', NULL, NULL, NULL, '', 'active', 1, 3, 43, 1, 6),
+('8412357', 'Patricia', 'Humana Lluta', '8412357', MD5('8412357'), 'patricia@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 45, 1, 7),
+('3336972', 'Pavel', 'Pérez Armata','3336972',MD5('3336972'), 'pavel@empresa.com', '1201', NULL, NULL, NULL, '', 'active', 1, 3, 46, 1, 3),
+('4262272', 'Ramiro', 'Marquez Gallardo','4262272', MD5('4262272'), 'ramiro@empresa.com', '1604', NULL, NULL, NULL, '', 'active', 1, 3, 47, 1, 6),
+('4842254', 'Reyna', 'Roque Ortega','4842254' ,MD5('4842254'), 'reyna@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 48, 1, 7),
+('2058080', 'Ricardo', 'Aguilar Asin','2058080',MD5('2058080'), 'ricardo@empresa.com', '1105', NULL, NULL, NULL, '', 'active', 1, 2, 49, 1, 2),
+('4918718', 'Rita Lizeth', 'Quiroz Suarez','4918718',MD5('4918718'), 'rita@empresa.com', '1102', NULL, NULL, NULL, '', 'active', 1, 3, 50, 1, 1),
+('3251519', 'Rolando', 'Paniagua Espinoza','3251519', MD5('3251519'), 'rolando@empresa.com', '1401', NULL, NULL, NULL, '', 'active', 1, 3, 51, 1, 4),
+('8264230', 'Rosa Adelaida','Quisper Calle','8264230',MD5('8264230'), 'rosa@empresa.com', '1307', NULL, NULL, NULL, '', 'active', 1, 2, 52, 1, 9),
+('6965732', 'Silvia', 'Condori Mamani', '6965732',MD5('6965732'), 'silvia@empresa.com', '1322', NULL, NULL, NULL, '', 'active', 1, 3, 53, 1, 1),
+('4985716', 'Silvia', 'Huanca Calle', '4985716', MD5('4985716'), 'silvia.huanca@empresa.com', '1316', NULL, NULL, NULL, '', 'active', 1, 3, 54, 1, 14),
+('4848702', 'Yussela Saleth', 'Goyzueta Ramos','4848702' ,MD5('4848702'), 'yussela@empresa.com', '1301', NULL, NULL, NULL, '', 'active', 1, 3, 57, 1, 7),
+('6102450', 'Waldo', 'Vaca Alvarez', '6102450',MD5('6102450'), 'waldo@empresa.com', '1407', NULL, NULL, NULL, '', 'active', 1, 3, 58, 1, 4);
+
 

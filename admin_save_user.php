@@ -5,7 +5,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
 // Verificar si el formulario fue enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
-    // Recoger los datos enviados desde el formulario
+    // Recoger y sanitizar los datos enviados desde el formulario
     $ci = mysqli_real_escape_string($conn, $_POST['ci']);
     $firstname = mysqli_real_escape_string($conn, $_POST['firstname']);
     $lastname = mysqli_real_escape_string($conn, $_POST['lastname']);
@@ -13,15 +13,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $personal_email = mysqli_real_escape_string($conn, $_POST['personal_email']);
     $cell_phone = mysqli_real_escape_string($conn, $_POST['cell_phone']);
+    $landline_phone = mysqli_real_escape_string($conn, $_POST['landline_phone']);
+    $repository_phone = mysqli_real_escape_string($conn, $_POST['repository_phone']);
     $phone = mysqli_real_escape_string($conn, $_POST['phone']);
     $birth_date = mysqli_real_escape_string($conn, $_POST['birth_date']);
     $address = mysqli_real_escape_string($conn, $_POST['address']);
     $position_id = intval($_POST['position_id']);
     $repository_id = intval($_POST['repository_id']);
+    $section_id = intval($_POST['section_id']);
     $role_id = intval($_POST['role_id']);
     $password = mysqli_real_escape_string($conn, $_POST['password']);
     $profile_img = NULL; // Inicializar la variable de la imagen
     
+    // Validar que no se seleccione el rol de Super Admin
+    if ($role_id == 1) {
+        echo "<script>alert('No se puede asignar el rol de Super Admin.'); window.location = 'admin_user.php';</script>";
+        exit(); // Detener la ejecución del script si se intenta asignar este rol
+    }
+
     // Manejo de la imagen de perfil
     if (isset($_FILES['profile_img']) && $_FILES['profile_img']['error'] == 0) {
         $img_name = $_FILES['profile_img']['name'];
@@ -92,9 +101,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $update_query = "UPDATE `user` 
                          SET `ci` = '$ci', `firstname` = '$firstname', `lastname` = '$lastname',
                              `username` = '$username', `email` = '$email', `personal_email` = '$personal_email', 
-                             `cell_phone` = '$cell_phone', `phone` = '$phone', `birth_date` = '$birth_date',
+                             `cell_phone` = '$cell_phone', `landline_phone` = '$landline_phone', 
+                             `repository_phone` = '$repository_phone', `phone` = '$phone', `birth_date` = '$birth_date',
                              `address` = '$address', `position_id` = $position_id, `repository_id` = $repository_id, 
-                             `role_id` = $role_id
+                             `section_id` = $section_id, `role_id` = $role_id
                              $password_update
                              $profile_img_update
                          WHERE `user_id` = $user_id";
@@ -110,11 +120,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $password_hash = md5($password); // Hash de la contraseña
 
         $insert_query = "INSERT INTO `user` (`ci`, `firstname`, `lastname`, `username`, `password`, `email`, 
-                                              `personal_email`, `cell_phone`, `phone`, `birth_date`, `address`, 
-                                              `position_id`, `repository_id`, `role_id`, `status`, `active_status`, `profile_img`)
+                                              `personal_email`, `cell_phone`, `landline_phone`, `repository_phone`, 
+                                              `phone`, `birth_date`, `address`, `position_id`, `repository_id`, 
+                                              `section_id`, `role_id`, `status`, `active_status`, `profile_img`)
                          VALUES ('$ci', '$firstname', '$lastname', '$username', '$password_hash', '$email', 
-                                 '$personal_email', '$cell_phone', '$phone', '$birth_date', '$address', 
-                                 $position_id, $repository_id, $role_id, 'active', 1, '$profile_img')";
+                                 '$personal_email', '$cell_phone', '$landline_phone', '$repository_phone', '$phone', 
+                                 '$birth_date', '$address', $position_id, $repository_id, $section_id, $role_id, 
+                                 'active', 1, '$profile_img')";
         
         if (mysqli_query($conn, $insert_query)) {
             echo "<script>alert('Usuario agregado correctamente.'); window.location = 'admin_user.php';</script>";

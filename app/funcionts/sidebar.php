@@ -125,5 +125,40 @@ $role_id = isset($_SESSION['role_id']) ? $_SESSION['role_id'] : null;
                 </li>
             </ul>
         <?php endif; ?>
+        <!-- Opciones para Administrador de Repositorio (role_id = 4) -->
+        <?php if ($role_id == 4): ?>
+
+            <p class="text-muted nav-heading mt-4 mb-1"><span>Administración</span></p>
+            <ul class="navbar-nav flex-fill w-100 mb-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="sections.php">
+                        <i class="fe fe-calendar fe-16"></i>
+                        <span class="ml-3 item-text">Secciones</span>
+                    </a>
+                </li>
+                <p class="text-muted nav-heading mt-4 mb-1"><span>Usuarios</span></p>
+                <li class="nav-item">
+                    <a class="nav-link" href="admin_user.php">
+                        <i class="fe fe-user fe-16"></i>
+                        <span class="ml-3 item-text">Usuarios</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="categories.php">
+                        <i class="fe fe-calendar fe-16"></i>
+                        <span class="ml-3 item-text">Categorías</span>
+                    </a>
+                </li>
+            </ul>
+            <p class="text-muted nav-heading mt-4 mb-1"><span>Documentación</span></p>
+            <ul class="navbar-nav flex-fill w-100 mb-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="upload_document.php">
+                        <i class="fe fe-file fe-16"></i>
+                        <span class="ml-3 item-text">Subir Documentos</span>
+                    </a>
+                </li>
+            </ul>
+        <?php endif; ?>
     </nav>
 </aside>

@@ -38,13 +38,13 @@ if (isset($_SESSION['user_id'])) {
 
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
-                <!-- Switcher de modo claro/oscuro -->
+
+                <!-- Botón de Página Principal -->
                 <li class="nav-item">
-                    <a class="nav-link mode-switcher my-2" href="#" id="modeSwitcher" data-mode="dark">
-                        <i class="fe fe-sun fe-16"></i>
+                    <a class="btn btn-light text-dark rounded-pill ml-2 " href="index.php">
+                        <i class="fe fe-home fe-16 mr-2 mb-1"></i> Página Principal
                     </a>
                 </li>
-
                 <!-- Botón de Noticias del día -->
                 <li class="nav-item">
                     <button class="btn btn-light text-dark rounded-pill ml-2" data-toggle="modal" data-target="#newsModal">
@@ -55,7 +55,7 @@ if (isset($_SESSION['user_id'])) {
                 <?php if ($userLoggedIn): ?>
                     <!-- Botón de administración si el usuario tiene el rol adecuado -->
                     <li class="nav-item ml-2">
-                        <?php if ($role_id == 1 || $role_id == 2): ?>
+                        <?php if ($role_id == 1 || $role_id == 2 || $role_id == 4): ?>
                             <a class="btn btn-light rounded-pill text-dark" href="dashboard.php">Administración</a>
                         <?php else: ?>
                             <a class="btn btn-light rounded-pill text-dark" href="perfil_user.php">Modificar Perfil</a>
@@ -83,36 +83,7 @@ if (isset($_SESSION['user_id'])) {
 
 <!-- CSS para el switcher de modo oscuro/claro -->
 <style>
-    /* Estilos para el switcher de modo claro/oscuro */
-    .mode-switcher {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 8px;
-        border-radius: 50%;
-        background-color: #f0f0f0; /* Fondo claro por defecto */
-        transition: background-color 0.3s ease;
-        cursor: pointer;
-    }
-
-    .mode-switcher:hover {
-        background-color: #e0e0e0; /* Fondo ligeramente más oscuro al hacer hover */
-    }
-
-    .mode-switcher i {
-        color: #343a40; /* Color del ícono (oscuro) */
-        font-size: 18px;
-    }
-
-    /* Cuando está en modo oscuro */
-    #modeSwitcher[data-mode="dark"] {
-        background-color: #343a40; /* Fondo oscuro en modo oscuro */
-        color: #ffffff;
-    }
-
-    #modeSwitcher[data-mode="dark"] i {
-        color: #ffffff;
-    }
+    
 
     /* Alineación del switcher y el botón de administración */
     .navbar-nav .nav-item {
@@ -120,7 +91,7 @@ if (isset($_SESSION['user_id'])) {
         align-items: center; /* Alinea verticalmente los elementos dentro del navbar */
     }
 
-    .navbar-nav .nav-link.mode-switcher {
+    .navbar-nav .nav-link {
         padding: 6px 8px;
         display: flex;
         align-items: center;

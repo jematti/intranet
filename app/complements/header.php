@@ -62,6 +62,6 @@
 </head>
 
 
-<body class="vertical  dark  ">
+<body class="vertical ">
 
    

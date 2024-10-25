@@ -28,9 +28,10 @@ include_once 'app/complements/header.php';
                     <div class="card-body">
                         <?php
                         $query = mysqli_query($conn, 
-                        "SELECT u.*, r.repository_name, ro.role_name 
+                        "SELECT u.*, r.repository_name, s.section_name, s.section_id, ro.role_name 
                         FROM `user` u 
                         LEFT JOIN `repositories` r ON u.repository_id = r.repository_id 
+                        LEFT JOIN `sections` s ON u.section_id = s.section_id 
                         LEFT JOIN `roles` ro ON u.role_id = ro.role_id 
                         WHERE u.`user_id` = '$_SESSION[user_id]'"
                         ) or die(mysqli_error($conn));
@@ -70,18 +71,11 @@ include_once 'app/complements/header.php';
                                                 <input type="hidden" name="repository_id" value="<?php echo $fetch['repository_id']; ?>">
                                             </div>
 
-                                            <!-- Selector de Unidad Organizacional (obligatorio), solo Unidad Organizacional activas -->
+                                            <!-- Unidad Organizacional (automática, no editable) -->
                                             <div class="form-group">
-                                                <label for="section_id">Unidad Organizacional</label>
-                                                <select class="form-control" id="section_id" name="section_id" required>
-                                                    <option value="">Seleccione una Unidad Organizacional</option>
-                                                    <?php
-                                                    $section_query = mysqli_query($conn, "SELECT * FROM `sections` WHERE `repository_id` = '{$fetch['repository_id']}' AND `status` = 1") or die(mysqli_error($conn));
-                                                    while ($section = mysqli_fetch_array($section_query)) {
-                                                        echo "<option value='" . $section['section_id'] . "'>" . $section['section_name'] . "</option>";
-                                                    }
-                                                    ?>
-                                                </select>
+                                                <label for="section_name">Unidad Organizacional</label>
+                                                <input type="text" id="section_name" class="form-control" value="<?php echo $fetch['section_name']; ?>" readonly>
+                                                <input type="hidden" id="section_id" name="section_id" value="<?php echo $fetch['section_id']; ?>">
                                             </div>
 
                                             <!-- Selector de Categoría (obligatorio), solo categorías activas -->
@@ -91,6 +85,7 @@ include_once 'app/complements/header.php';
                                                     <option value="">Seleccione una Categoría</option>
                                                 </select>
                                             </div>
+
                                             <!-- Campo para seleccionar archivo -->
                                             <div class="form-group">
                                                 <label for="fileUpload">Seleccione el archivo</label>
@@ -193,28 +188,29 @@ include_once 'app/complements/footer.php';
 ?>
 
 <script>
-// Función para cargar las categorías basadas en la sección seleccionada
-$(document).ready(function(){
-    $('#section_id').change(function(){
-        var section_id = $(this).val();
+// Función para cargar las categorías basadas en la sección seleccionada al cargar la página
+$(document).ready(function() {
+    var section_id = $('#section_id').val();
+    
+    if (section_id) {
         $.ajax({
             url: 'get_categories.php',
             type: 'post',
             data: {section_id: section_id},
             dataType: 'json',
-            success: function(response){
+            success: function(response) {
                 var len = response.length;
                 $("#category_id").empty();
                 $("#category_id").append("<option value=''>Seleccione una Categoría</option>");
-                for(var i = 0; i < len; i++){
+                for (var i = 0; i < len; i++) {
                     if (response[i]['status'] == 1) { // Verificar si la categoría está activa
                         var id = response[i]['category_id'];
                         var name = response[i]['category_name'];
-                        $("#category_id").append("<option value='"+id+"'>"+name+"</option>");
+                        $("#category_id").append("<option value='" + id + "'>" + name + "</option>");
                     }
                 }
             }
         });
-    });
+    }
 });
 </script>

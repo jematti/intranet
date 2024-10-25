@@ -49,8 +49,15 @@ $status = $_GET['status'] ?? null;
         <div class="alert alert-info">
             <h3>Unidad Organizacional</h3>
         </div>
+        
+        <!-- Barra de búsqueda -->
+        <div class="form-group">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o ID" onkeyup="searchTable()">
+        </div>
+
         <button class="btn btn-success" data-toggle="modal" data-target="#form_modal"><span class="glyphicon glyphicon-plus"></span> Agregar</button>
         <br /><br />
+
         <table id="table" class="table table-bordered">
             <thead>
                 <tr>
@@ -60,23 +67,23 @@ $status = $_GET['status'] ?? null;
                     <th>Acción</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="tableBody">
                 <?php
-                // Consultar las secciones y su estado (habilitado/deshabilitado)
-                $query = mysqli_query($conn, "SELECT s.section_id, s.section_name, s.repository_id, s.status, r.repository_name 
-                                            FROM sections s 
-                                            JOIN repositories r ON s.repository_id = r.repository_id") or die(mysqli_error($conn));
-                while ($fetch = mysqli_fetch_array($query)) {
-                    // Definir el botón de habilitar/deshabilitar según el estado actual
-                    $button_class = $fetch['status'] == 1 ? 'btn-danger' : 'btn-success';
-                    $button_text = $fetch['status'] == 1 ? 'Deshabilitar' : 'Habilitar';
+                if ($repository_id) {
+                    $query = mysqli_query($conn, "SELECT s.section_id, s.section_name, s.repository_id, s.status, r.repository_name 
+                                                FROM sections s 
+                                                JOIN repositories r ON s.repository_id = r.repository_id
+                                                WHERE s.repository_id = '$repository_id'") or die(mysqli_error($conn));
+
+                    while ($fetch = mysqli_fetch_array($query)) {
+                        $button_class = $fetch['status'] == 1 ? 'btn-danger' : 'btn-success';
+                        $button_text = $fetch['status'] == 1 ? 'Deshabilitar' : 'Habilitar';
                 ?>
                     <tr class="del_section<?php echo $fetch['section_id'] ?>">
                         <td><?php echo $fetch['section_id'] ?></td>
                         <td><?php echo $fetch['section_name'] ?></td>
                         <td><?php echo $fetch['repository_name'] ?></td>
                         <td>
-                            <!-- Botón de editar -->
                             <button class="btn btn-warning" 
                                     data-section-id="<?php echo $fetch['section_id']; ?>" 
                                     data-section-name="<?php echo htmlspecialchars(addslashes($fetch['section_name'])); ?>" 
@@ -84,14 +91,13 @@ $status = $_GET['status'] ?? null;
                                     onclick="openEditModal(this)">
                                 <span class="glyphicon glyphicon-edit"></span> Editar
                             </button>
-
-                            <!-- Botón de habilitar/deshabilitar -->
                             <button class="btn <?php echo $button_class; ?>" type="button" onclick="toggleStatus(<?php echo $fetch['section_id']; ?>)">
                                 <?php echo $button_text; ?>
                             </button>
                         </td>
                     </tr>
                 <?php
+                    }
                 }
                 ?>
             </tbody>
@@ -133,6 +139,24 @@ include_once 'app/complements/footer.php';
 ?>
 
 <script>
+// Función para buscar en la tabla por nombre o ID
+function searchTable() {
+    var input = document.getElementById('searchInput');
+    var filter = input.value.toLowerCase();
+    var rows = document.querySelectorAll('#tableBody tr');
+
+    rows.forEach(function(row) {
+        var id = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+        var name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+
+        if (id.indexOf(filter) > -1 || name.indexOf(filter) > -1) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+
 // Abrir Modal para editar sección
 function openEditModal(button) {
     // Obtener los valores de los atributos data-* del botón

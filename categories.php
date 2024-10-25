@@ -3,20 +3,25 @@ require 'app/funcionts/admin/validator.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
 include_once 'app/complements/header.php';
 
-// Recuperar el repositorio al que pertenece el usuario logueado
+// Recuperar el repositorio y la sección a la que pertenece el usuario logueado
 $repository_id = '';
 $repository_name = '';
+$section_id = ''; // Nueva variable para la sección
+$section_name = ''; // Nueva variable para el nombre de la sección
 $user_id = $_SESSION['user_id'] ?? null;
 
 if ($user_id) {
-    $query_user = mysqli_query($conn, "SELECT r.repository_id, r.repository_name 
+    $query_user = mysqli_query($conn, "SELECT r.repository_id, r.repository_name, s.section_id, s.section_name 
                                        FROM user u 
                                        JOIN repositories r ON u.repository_id = r.repository_id 
+                                       JOIN sections s ON u.section_id = s.section_id
                                        WHERE u.user_id = '$user_id' 
                                        LIMIT 1");
     if ($row_user = mysqli_fetch_assoc($query_user)) {
         $repository_id = $row_user['repository_id'];
         $repository_name = $row_user['repository_name'];
+        $section_id = $row_user['section_id']; // Asignar la sección
+        $section_name = $row_user['section_name']; // Asignar el nombre de la sección
     }
 }
 ?>
@@ -40,45 +45,61 @@ if ($user_id) {
         <div class="alert alert-info">
             <h3>Categorías</h3>
         </div>
+
+        <!-- Barra de búsqueda -->
+        <div class="form-group">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre" onkeyup="searchTable()">
+        </div>
+
+        <!-- Filtro por sección -->
+        <div class="form-group">
+            <label for="sectionFilter">Filtrar por Unidad Organizacional</label>
+            <select id="sectionFilter" class="form-control" onchange="filterBySection()">
+                <option value="">Mostrar todas</option>
+                <?php
+                // Consultar todas las secciones del repositorio del usuario logueado
+                $sections_query = mysqli_query($conn, "SELECT section_id, section_name FROM sections WHERE repository_id = '$repository_id'");
+                while ($section = mysqli_fetch_array($sections_query)) {
+                    echo "<option value='{$section['section_id']}'>{$section['section_name']}</option>";
+                }
+                ?>
+            </select>
+        </div>
+
         <button class="btn btn-success" data-toggle="modal" data-target="#form_modal" onclick="loadSections(<?php echo $repository_id; ?>)">Agregar</button>
         <br /><br />
+
         <table id="table" class="table table-bordered">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Unidad Organizacional</th>
-                    <th>Área organizacional</th>
                     <th>Acción</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="tableBody">
                 <?php
-                // Consultar categorías, secciones y Área organizacional
                 $query = mysqli_query($conn, "SELECT c.category_id, c.category_name, c.status, s.section_id, s.section_name, r.repository_id, r.repository_name 
                                               FROM categories c 
                                               JOIN sections s ON c.section_id = s.section_id 
                                               JOIN repositories r ON s.repository_id = r.repository_id 
-                                              WHERE c.status IN (0, 1)") or die(mysqli_error($conn));
-                
-                // Iterar sobre los resultados
+                                              WHERE c.status IN (0, 1) 
+                                              AND r.repository_id = '$repository_id' 
+                                              AND r.status = 1") or die(mysqli_error($conn));
+
                 while ($fetch = mysqli_fetch_array($query)) {
-                    // Determinar la clase y el texto del botón según el estado de la categoría
                     $statusButtonClass = $fetch['status'] == 1 ? 'btn-danger' : 'btn-success';
                     $statusButtonText = $fetch['status'] == 1 ? 'Deshabilitar' : 'Habilitar';
                 ?>
-                    <tr class="del_category<?php echo $fetch['category_id'] ?>">
+                    <tr data-section-id="<?php echo $fetch['section_id']; ?>">
                         <td><?php echo $fetch['category_id'] ?></td>
                         <td><?php echo $fetch['category_name'] ?></td>
                         <td><?php echo $fetch['section_name'] ?></td>
-                        <td><?php echo $fetch['repository_name'] ?></td>
                         <td>
-                            <!-- Botón de Habilitar/Deshabilitar -->
                             <button class="btn <?php echo $statusButtonClass; ?>" type="button" onclick="confirmToggleCategoryStatus(<?php echo $fetch['category_id']; ?>, <?php echo $fetch['status']; ?>)">
                                 <?php echo $statusButtonText; ?>
                             </button>
-
-                            <!-- Editar botón -->
                             <button class="btn btn-warning" onclick="openEditModal('<?php echo $fetch['category_id']; ?>', '<?php echo addslashes($fetch['category_name']); ?>', '<?php echo $fetch['section_id']; ?>', '<?php echo $fetch['repository_id']; ?>')">Editar</button>
                         </td>
                     </tr>
@@ -111,9 +132,9 @@ if ($user_id) {
                         </div>
                         <div class="form-group">
                             <label>Unidad Organizacional</label>
-                            <select id="section_id" name="section_id" class="form-control" required>
-                                <option value="">Seleccione una Unidad Organizacional</option>
-                            </select>
+                            <!-- Campo Unidad Organizacional deshabilitado y pre-rellenado con la sección del usuario -->
+                            <input type="text" id="section_name" class="form-control" value="<?php echo $section_name; ?>" disabled>
+                            <input type="hidden" id="section_id" name="section_id" value="<?php echo $section_id; ?>">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -131,6 +152,38 @@ include_once 'app/complements/footer.php';
 ?>
 
 <script>
+
+// Función para buscar en la tabla por nombre
+function searchTable() {
+    var input = document.getElementById('searchInput');
+    var filter = input.value.toLowerCase();
+    var rows = document.querySelectorAll('#tableBody tr');
+
+    rows.forEach(function(row) {
+        var name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        if (name.indexOf(filter) > -1) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+
+// Función para filtrar por sección
+function filterBySection() {
+    var sectionFilter = document.getElementById('sectionFilter').value;
+    var rows = document.querySelectorAll('#tableBody tr');
+
+    rows.forEach(function(row) {
+        var sectionId = row.getAttribute('data-section-id');
+        if (sectionFilter === "" || sectionId === sectionFilter) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+
 // Función para cargar las secciones basadas en el repositorio seleccionado
 function loadSections(repository_id) {
     // Limpiar las secciones actuales

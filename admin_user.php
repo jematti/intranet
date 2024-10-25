@@ -3,14 +3,28 @@ require 'app/funcionts/admin/validator.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
 include_once 'app/complements/header.php';
 
+// Obtener los datos del usuario logueado
+$user_id = $_SESSION['user_id'];
+$role_id = null;
+$repository_id = null;
+
+// Obtener la información del usuario logueado, incluyendo el role_id y el repository_id
+$user_info_query = mysqli_query($conn, "SELECT role_id, repository_id FROM user WHERE user_id = '$user_id'") or die(mysqli_error($conn));
+if ($user_info = mysqli_fetch_array($user_info_query)) {
+    $role_id = $user_info['role_id'];
+    $repository_id = $user_info['repository_id'];
+}
+
 // Obtener los roles disponibles
 $roles_query = mysqli_query($conn, "SELECT * FROM roles") or die(mysqli_error($conn));
 
 // Obtener las posiciones disponibles
 $positions_query = mysqli_query($conn, "SELECT * FROM positions") or die(mysqli_error($conn));
 
-// Obtener los repositorios disponibles
-$repositories_query = mysqli_query($conn, "SELECT * FROM repositories") or die(mysqli_error($conn));
+// Obtener todos los repositorios disponibles solo si el usuario es Super Admin (role_id = 1)
+if ($role_id == 1) {
+    $repositories_query = mysqli_query($conn, "SELECT * FROM repositories") or die(mysqli_error($conn));
+}
 ?>
 
 <!-- navegador principal -->
@@ -28,43 +42,73 @@ $repositories_query = mysqli_query($conn, "SELECT * FROM repositories") or die(m
 <main role="main" class="main-content">
     <div id="content">
         <br /><br /><br />
-        <div class="alert alert-info"><h3>Administradores</h3></div>
+        <div class="alert alert-info"><h3>Usuarios</h3></div>
+        
+        <!-- Barra de búsqueda -->
+        <div class="form-group">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o CI" onkeyup="searchTable()">
+        </div>
+
+        <!-- Mostrar selector de repositorios solo si el usuario es Super Admin (role_id = 1) -->
+        <?php if ($role_id == 1): ?>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <select id="repositoryFilter" class="form-control" onchange="filterByRepository()">
+                    <option value="">Mostrar todos</option>
+                    <?php
+                    mysqli_data_seek($repositories_query, 0);
+                    while ($repo = mysqli_fetch_array($repositories_query)) {
+                        echo "<option value='{$repo['repository_id']}'>{$repo['repository_name']}</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <!-- Botón para agregar usuario -->
         <button class="btn btn-success" onclick="openModal(false);"><span class="glyphicon glyphicon-plus"></span> Agregar Usuario</button>
         <br /><br />
+
+        <!-- Tabla de usuarios -->
         <table id="table" class="table table-bordered">
             <thead>
                 <tr>
-                    <th>CI</th>
                     <th>Nombre</th>
-                    <th>Apellidos</th>
                     <th>Usuario</th>
                     <th>Email</th>
                     <th>Celular</th>
-                    <th>Repositorio</th>
                     <th>Rol</th>
                     <th>Estado</th>
                     <th>Acción</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="userTableBody">
                 <?php
-                    $query = mysqli_query($conn, "SELECT u.*, r.role_name, p.position_name, repo.repository_name 
-                                                FROM `user` u 
-                                                JOIN `roles` r ON u.role_id = r.role_id 
-                                                LEFT JOIN `positions` p ON u.position_id = p.position_id 
-                                                LEFT JOIN `repositories` repo ON u.repository_id = repo.repository_id") 
-                                                or die(mysqli_error($conn));
-                    while($fetch = mysqli_fetch_array($query)){
+                // Filtrar por repositorio si el usuario es Administrador de Página (role_id = 2)
+                $query = "SELECT u.*, r.role_name, p.position_name, repo.repository_name 
+                          FROM `user` u 
+                          JOIN `roles` r ON u.role_id = r.role_id 
+                          LEFT JOIN `positions` p ON u.position_id = p.position_id 
+                          LEFT JOIN `repositories` repo ON u.repository_id = repo.repository_id ";
+
+                if ($role_id == 2) {
+                    // Solo ver usuarios del mismo repositorio si es Administrador de Página
+                    $query .= "WHERE u.repository_id = '$repository_id' AND u.role_id != 1"; // Excluir Super Admin
+                } elseif ($role_id == 1) {
+                    // Ver todos los usuarios excepto Super Admin (role_id = 1)
+                    $query .= "WHERE u.role_id != 1";
+                }
+
+                $result = mysqli_query($conn, $query) or die(mysqli_error($conn));
+                while ($fetch = mysqli_fetch_array($result)) {
                 ?>
-                <tr class="del_user<?php echo $fetch['user_id']?>">
-                    <td><?php echo $fetch['ci']?></td>
-                    <td><?php echo $fetch['firstname']?></td>
-                    <td><?php echo $fetch['lastname']?></td>
+                <tr class="del_user<?php echo $fetch['user_id']?>" data-repository-id="<?php echo $fetch['repository_id']?>">
+                    <td><?php echo $fetch['firstname']?> <?php echo $fetch['lastname']?></td>
                     <td><?php echo $fetch['username']?></td>
                     <td><?php echo $fetch['email']?></td>
                     <td><?php echo $fetch['cell_phone'] ? $fetch['cell_phone'] : 'N/A' ?></td>
                     <td><?php echo $fetch['position_name'] ? $fetch['position_name'] : 'N/A' ?></td>
-                    <td><?php echo $fetch['repository_name'] ? $fetch['repository_name'] : 'N/A' ?></td>
                     <td><?php echo $fetch['role_name']?></td>
                     <td>
                         <?php if($fetch['active_status'] == 1): ?>
@@ -76,17 +120,14 @@ $repositories_query = mysqli_query($conn, "SELECT * FROM repositories") or die(m
                     <td>
                         <center>
                             <button class="btn btn-warning mb-1" onclick="getUserData(<?php echo $fetch['user_id']?>);"><span class="glyphicon glyphicon-edit"></span> Editar</button>
-                            <button class="btn btn-danger btn-toggle-status" data-id="<?php echo $fetch['user_id']?>" data-status="<?php echo $fetch['active_status']?>">
-                                <?php echo ($fetch['active_status'] == 1) ? 'Desactivar' : 'Activar'; ?>
-                            </button>
+                            <button class="btn btn-danger btn-toggle-status" data-id="<?php echo $fetch['user_id']?>" data-status="<?php echo $fetch['active_status']?>"><?php echo ($fetch['active_status'] == 1) ? 'Desactivar' : 'Activar'; ?></button>
                         </center>
                     </td>
                 </tr>
                 <?php
-                    }
+                }
                 ?>
             </tbody>
-
         </table>
     </div>
 
@@ -104,7 +145,6 @@ $repositories_query = mysqli_query($conn, "SELECT * FROM repositories") or die(m
                     <div class="modal-body">
                         <div class="container-fluid">
                             <div class="row">
-                                <!-- Campo oculto para user_id -->
                                 <input type="hidden" name="user_id" id="user_id">
                                 <div class="col-md-6">
                                     <!-- Primera columna -->
@@ -129,10 +169,13 @@ $repositories_query = mysqli_query($conn, "SELECT * FROM repositories") or die(m
                                         <input type="text" name="cell_phone" class="form-control" id="cell_phone"/>
                                     </div>
                                     <div class="form-group">
-                                        <label for="address">Dirección</label>
-                                        <input type="text" name="address" class="form-control" id="address"/>
+                                        <label for="landline_phone">Teléfono Fijo</label>
+                                        <input type="text" name="landline_phone" class="form-control" id="landline_phone"/>
                                     </div>
-                                    
+                                    <div class="form-group">
+                                        <label for="repository_phone">Teléfono Fijo del Repositorio</label>
+                                        <input type="text" name="repository_phone" class="form-control" id="repository_phone"/>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <!-- Segunda columna -->
@@ -142,14 +185,14 @@ $repositories_query = mysqli_query($conn, "SELECT * FROM repositories") or die(m
                                     </div>
                                     <div class="form-group">
                                         <label for="password">Contraseña (dejar en blanco para mantener actual)</label>
-                                        <input type="password" name="password" class="form-control" id="password" required/>
+                                        <input type="password" name="password" class="form-control" id="password"/>
                                     </div>
                                     <div class="form-group">
                                         <label for="personal_email">Correo Personal</label>
                                         <input type="email" name="personal_email" class="form-control" id="personal_email"/>
                                     </div>
                                     <div class="form-group">
-                                        <label for="phone">Teléfono</label>
+                                        <label for="phone">Teléfono (Interno)</label>
                                         <input type="text" name="phone" class="form-control" id="phone"/>
                                     </div>
                                     <div class="form-group">
@@ -163,8 +206,8 @@ $repositories_query = mysqli_query($conn, "SELECT * FROM repositories") or die(m
                                 </div>
                             </div>
                             <div class="row">
-                                <!-- Posición, Repositorio, y Rol -->
-                                <div class="col-md-4">
+                                <!-- Posición, Repositorio, Sección y Rol -->
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="position_id">Posición <span class="text-danger">*</span></label>
                                         <select name="position_id" class="form-control" id="position_id" required>
@@ -178,28 +221,50 @@ $repositories_query = mysqli_query($conn, "SELECT * FROM repositories") or die(m
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="repository_id">Repositorio <span class="text-danger">*</span></label>
-                                        <select name="repository_id" class="form-control" id="repository_id" required>
+                                        <select name="repository_id" class="form-control" id="repository_id" required onchange="loadSections()">
                                             <option value="">Seleccione un repositorio</option>
                                             <?php
-                                            mysqli_data_seek($repositories_query, 0);
-                                            while ($repo = mysqli_fetch_array($repositories_query)) {
-                                                echo "<option value='{$repo['repository_id']}'>{$repo['repository_name']}</option>";
+                                            if ($role_id == 1) {
+                                                // Mostrar todos los repositorios si es Super Admin
+                                                mysqli_data_seek($repositories_query, 0);
+                                                while ($repo = mysqli_fetch_array($repositories_query)) {
+                                                    echo "<option value='{$repo['repository_id']}'>{$repo['repository_name']}</option>";
+                                                }
+                                            } else {
+                                                // Mostrar solo el repositorio del Administrador de Página
+                                                $repo_query = mysqli_query($conn, "SELECT repository_id, repository_name FROM repositories WHERE repository_id = '$repository_id'") or die(mysqli_error($conn));
+                                                if ($repo = mysqli_fetch_array($repo_query)) {
+                                                    echo "<option value='{$repo['repository_id']}'>{$repo['repository_name']}</option>";
+                                                }
                                             }
                                             ?>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="section_id">Sección</label>
+                                        <select name="section_id" class="form-control" id="section_id">
+                                            <option value="">Seleccione una sección</option>
+                                            <!-- Aquí se cargarán las secciones dinámicamente -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="role_id">Rol <span class="text-danger">*</span></label>
                                         <select name="role_id" class="form-control" id="role_id" required>
+                                            <option value="">Seleccione un rol</option>
                                             <?php
                                             mysqli_data_seek($roles_query, 0);
                                             while ($role = mysqli_fetch_array($roles_query)) {
-                                                echo "<option value='{$role['role_id']}'>{$role['role_name']}</option>";
+                                                // Omitir la opción de Super Admin (role_id = 1)
+                                                if ($role['role_id'] != 1) {
+                                                    echo "<option value='{$role['role_id']}'>{$role['role_name']}</option>";
+                                                }
                                             }
                                             ?>
                                         </select>
@@ -216,7 +281,6 @@ $repositories_query = mysqli_query($conn, "SELECT * FROM repositories") or die(m
             </div>
         </div>
     </div>
-
 </main>
 
 <?php include_once 'app/complements/footer.php'; ?>
@@ -236,11 +300,19 @@ function openModal(isEdit, user = {}) {
         $('#personal_email').val(user.personal_email);
         $('#cell_phone').val(user.cell_phone);
         $('#phone').val(user.phone);
+        $('#landline_phone').val(user.landline_phone);
+        $('#repository_phone').val(user.repository_phone);
         $('#birth_date').val(user.birth_date);
         $('#address').val(user.address);
         $('#position_id').val(user.position_id);
         $('#repository_id').val(user.repository_id);
         $('#role_id').val(user.role_id);
+
+        // No rellenar el campo de contraseña
+        $('#password').val('');  // Vaciar el campo de contraseña
+
+        // Cargar secciones pasando el section_id del usuario
+        loadSections(user.section_id);
     } else {
         $('#modal_title').text('Agregar Usuario');
         $('#submit_btn').text('Guardar');
@@ -249,6 +321,7 @@ function openModal(isEdit, user = {}) {
     }
     $('#form_modal').modal('show');
 }
+
 
 // Función AJAX para obtener los datos del usuario
 function getUserData(userId) {
@@ -290,4 +363,85 @@ $(document).ready(function(){
         });
     });
 });
+</script>
+
+
+<script>
+
+function searchTable() {
+    var input = document.getElementById('searchInput');
+    var filter = input.value.toLowerCase();
+    var rows = document.querySelectorAll('#userTableBody tr');
+
+    rows.forEach(function(row) {
+        var name = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+        var username = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        
+        if (name.indexOf(filter) > -1 || username.indexOf(filter) > -1) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+
+function loadSections(userSectionId = null) {
+    var repository_id = document.getElementById('repository_id').value;
+
+    // Verificar si se ha seleccionado un repositorio
+    if (repository_id) {
+        // Crear la solicitud AJAX
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'load_sections.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+        // Manejar la respuesta
+        xhr.onload = function() {
+            if (this.status == 200) {
+                var sections = JSON.parse(this.responseText);
+                var sectionSelect = document.getElementById('section_id');
+                
+                // Limpiar las opciones actuales
+                sectionSelect.innerHTML = '<option value="">Seleccione una sección</option>';
+
+                // Añadir las nuevas opciones
+                sections.forEach(function(section) {
+                    var option = document.createElement('option');
+                    option.value = section.section_id;
+                    option.textContent = section.section_name;
+                    sectionSelect.appendChild(option);
+                });
+
+                // Si estamos en edición, seleccionar la sección del usuario
+                if (userSectionId) {
+                    sectionSelect.value = userSectionId;
+                }
+            }
+        };
+
+        // Enviar los datos
+        xhr.send('repository_id=' + repository_id);
+    } else {
+        // Si no hay repositorio seleccionado, limpiar las secciones
+        document.getElementById('section_id').innerHTML = '<option value="">Seleccione una sección</option>';
+    }
+}
+
+// Cargar las secciones dinámicamente cuando se selecciona un repositorio
+// Filtrar la tabla de usuarios por repositorio
+function filterByRepository() {
+    var repository_id = document.getElementById('repositoryFilter').value;
+    var rows = document.querySelectorAll('#userTableBody tr');
+
+    rows.forEach(function(row) {
+        var repo_id = row.getAttribute('data-repository-id');
+
+        if (repository_id === '' || repository_id === repo_id) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+
 </script>
