@@ -18,8 +18,8 @@ if ($user_info = mysqli_fetch_array($user_info_query)) {
 // Obtener los roles disponibles
 $roles_query = mysqli_query($conn, "SELECT * FROM roles") or die(mysqli_error($conn));
 
-// Obtener las posiciones disponibles
-$positions_query = mysqli_query($conn, "SELECT * FROM positions") or die(mysqli_error($conn));
+// Obtener las posiciones disponibles y activas
+$positions_query = mysqli_query($conn, "SELECT * FROM positions WHERE status = 1 ORDER BY position_name ASC") or die(mysqli_error($conn));
 
 // Obtener todos los repositorios disponibles solo si el usuario es Super Admin (role_id = 1)
 if ($role_id == 1) {
@@ -198,6 +198,10 @@ if ($role_id == 1) {
                                     <div class="form-group">
                                         <label for="birth_date">Fecha de Nacimiento</label>
                                         <input type="date" name="birth_date" class="form-control" id="birth_date"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="address">Dirección</label>
+                                        <input type="text" name="address" class="form-control" id="address"/>
                                     </div>
                                     <div class="form-group">
                                         <label for="profile_img">Imagen de Perfil (Opcional)</label>
