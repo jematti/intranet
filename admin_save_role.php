@@ -1,5 +1,5 @@
 <?php
-include $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 
 if (isset($_POST['save'])) {
     $role_name = mysqli_real_escape_string($conn, $_POST['role_name']);

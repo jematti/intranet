@@ -1,6 +1,8 @@
 <?php
 include_once 'app/complements/header.php';
-include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+
+include("conexion_db.php");
+
 
 // Incluir el archivo de búsqueda si hay una solicitud POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

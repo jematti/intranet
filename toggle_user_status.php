@@ -1,6 +1,6 @@
 <?php
 // Incluir la conexión a la base de datos
-include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_id = intval($_POST['user_id']);

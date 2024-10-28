@@ -1,6 +1,6 @@
 <?php
 
-include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 include_once 'app/complements/header.php';
 
 // Consulta para obtener los usuarios activos organizados por repositorio

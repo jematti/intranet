@@ -1,5 +1,5 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 
 $category_id = $_GET['category_id'];
 $query = mysqli_query($conn, "SELECT * FROM `storage` WHERE `category_id` = '$category_id'");

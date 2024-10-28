@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 
 // Verifica si el usuario está logueado
 if (!isset($_SESSION['user_id'])) {

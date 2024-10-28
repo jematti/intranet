@@ -1,6 +1,6 @@
 <?php
 require 'app/funcionts/admin/validator.php';
-include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 
 // Obtener los parámetros de los filtros
 $repositoryId = isset($_GET['repository_id']) ? $_GET['repository_id'] : '';

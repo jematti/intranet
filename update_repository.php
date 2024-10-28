@@ -1,6 +1,6 @@
 <?php
 // Conectar con la base de datos
-include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 
 if (isset($_POST['update'])) {
     // Recoger los datos del formulario

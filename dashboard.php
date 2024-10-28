@@ -5,7 +5,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 require 'app/funcionts/admin/validator.php';
-include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 include_once 'app/complements/header.php';
 
 // Consultar la información relevante de la base de datos

@@ -1,6 +1,6 @@
 <?php
 // Incluir la conexión a la base de datos
-include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 
 // Verificar si se envió el ID de posición y el estado actual
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['position_id']) && isset($_POST['status'])) {

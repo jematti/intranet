@@ -1,6 +1,6 @@
 <?php
 require 'app/funcionts/admin/validator.php';
-include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 include_once 'app/complements/header.php';
 ?>
 
@@ -144,9 +144,11 @@ include_once 'app/complements/header.php';
                                                 </a>
                                             </td>
                                             <td>
-                                                <button class="btn <?php echo $statusButtonClass; ?> toggle-status-btn" type="button" data-id="<?php echo $file['store_id']; ?>">
-                                                    <?php echo $statusButtonText?>
-                                                </button>
+                                                <?php if ($file['status'] == 1) { ?>
+                                                    <button class="btn btn-danger" type="button" onclick="disableDocument(<?php echo $file['store_id']; ?>)">Deshabilitar</button>
+                                                <?php } else { ?>
+                                                    <button class="btn btn-success" type="button" onclick="enableDocument(<?php echo $file['store_id']; ?>)">Habilitar</button>
+                                                <?php } ?>
                                             </td>
                                         </tr>
                                         <?php } ?>
@@ -214,3 +216,22 @@ $(document).ready(function() {
     }
 });
 </script>
+
+<script>
+function disableDocument(storeId) {
+    if (confirm('¿Está seguro de que desea deshabilitar este documento?')) {
+        $.post('disable_document.php', { disable: true, store_id: storeId }, function(response) {
+            window.location.reload();
+        });
+    }
+}
+
+function enableDocument(storeId) {
+    if (confirm('¿Está seguro de que desea habilitar este documento?')) {
+        $.post('enable_document.php', { enable: true, store_id: storeId }, function(response) {
+            window.location.reload();
+        });
+    }
+}
+</script>
+

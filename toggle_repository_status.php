@@ -1,6 +1,6 @@
 <?php
 require 'app/funcionts/admin/validator.php';
-include_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 
 if (isset($_POST['repository_id']) && isset($_POST['status'])) {
     $repository_id = $_POST['repository_id'];

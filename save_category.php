@@ -1,6 +1,6 @@
 <?php
 // Incluir la conexión a la base de datos
-include $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 
 // Comprobar si el formulario fue enviado
 if (isset($_POST['save'])) {
