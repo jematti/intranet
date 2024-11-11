@@ -290,7 +290,7 @@ VALUES
 ('3462509', 'Hector', 'Sempertegui Alvarez', '3462509', MD5('3462509'), 'hector@empresa.com', '1313', NULL, NULL, NULL, '', 'active', 1, 3, 20, 1, 14),
 ('4898121', 'Hernan Sandro', 'Aquino Churqui', '4898121', MD5('4898121'), 'hernan@empresa.com', '1306', NULL, NULL, NULL, '', 'active', 1, 3, 21, 1, 9),
 ('5989585', 'Janela Ingrid', 'Vargas Vasquez', '5989585', MD5('5989585'), 'janela@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 22, 1, 5),
-('8324905', 'Javier Edson', 'Zapana', '8324905', MD5('8324905'), 'javier@empresa.com', '1312', NULL, NULL, NULL, 'La Paz Bolivia', 'active', 1, 1, 23, 1, 1),
+('8324905', 'Javier Edson', 'Zapana', '8324905', MD5('8324905'), 'javier@empresa.com', '1312', NULL, NULL, NULL, 'La Paz Bolivia', 'active', 1, 1, 23, 1, 12),
 ('3487543', 'Juan', 'Ramos', '3487543', MD5('3487543'), 'juan@empresa.com', '1503', NULL, NULL, NULL, '', 'active', 1, 3, 24, 1, 1),
 ('9209737', 'Karina', 'Saravia Flores', '9209737', MD5('9209737'), 'karina@empresa.com', '1303', NULL, NULL, NULL, '', 'active', 1, 2, 25, 1, 7),
 ('9070081', 'Katerine', 'Isidro Queso', '9070081', MD5('9070081'), 'katerine@empresa.com', '1202', NULL, NULL, NULL, '', 'active', 1, 2, 26, 1, 3),

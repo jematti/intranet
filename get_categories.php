@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 
 if (isset($_POST['section_id'])) {
     $section_id = $_POST['section_id'];

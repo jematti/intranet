@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 
 // Verificar que se reciban los datos correctos
 if (isset($_POST['category_id']) && isset($_POST['status'])) {

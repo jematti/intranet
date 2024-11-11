@@ -1,5 +1,5 @@
 <?php
-require $_SERVER['DOCUMENT_ROOT'] . '/intranet/conexion_db.php';
+include("conexion_db.php");
 
 if (isset($_POST['repository_id'])) {
     $repository_id = intval($_POST['repository_id']);
