@@ -3,27 +3,31 @@ require 'app/funcionts/admin/validator.php';
 include("conexion_db.php");
 include_once 'app/complements/header.php';
 
-// Recuperar el repositorio y la sección a la que pertenece el usuario logueado
+// Recuperar el repositorio, la sección, y el rol del usuario logueado
 $repository_id = '';
 $repository_name = '';
-$section_id = ''; // Nueva variable para la sección
-$section_name = ''; // Nueva variable para el nombre de la sección
+$section_id = '';
+$section_name = '';
+$role_name = '';
 $user_id = $_SESSION['user_id'] ?? null;
 
 if ($user_id) {
-    $query_user = mysqli_query($conn, "SELECT r.repository_id, r.repository_name, s.section_id, s.section_name 
+    $query_user = mysqli_query($conn, "SELECT r.repository_id, r.repository_name, s.section_id, s.section_name, ro.role_name
                                        FROM user u 
                                        JOIN repositories r ON u.repository_id = r.repository_id 
                                        JOIN sections s ON u.section_id = s.section_id
+                                       JOIN roles ro ON u.role_id = ro.role_id
                                        WHERE u.user_id = '$user_id' 
                                        LIMIT 1");
     if ($row_user = mysqli_fetch_assoc($query_user)) {
         $repository_id = $row_user['repository_id'];
         $repository_name = $row_user['repository_name'];
-        $section_id = $row_user['section_id']; // Asignar la sección
-        $section_name = $row_user['section_name']; // Asignar el nombre de la sección
+        $section_id = $row_user['section_id'];
+        $section_name = $row_user['section_name'];
+        $role_name = $row_user['role_name'];
     }
 }
+
 ?>
 
 <!-- navegador principal -->
@@ -126,15 +130,26 @@ if ($user_id) {
                         </div>
                         <div class="form-group">
                             <label>Área organizacional</label>
-                            <!-- Campo Área organizacional, deshabilitado y pre-rellenado con el valor del usuario -->
                             <input type="text" id="repository_name" class="form-control" value="<?php echo $repository_name; ?>" disabled>
                             <input type="hidden" id="repository_id" name="repository_id" value="<?php echo $repository_id; ?>">
                         </div>
                         <div class="form-group">
                             <label>Unidad Organizacional</label>
-                            <!-- Campo Unidad Organizacional deshabilitado y pre-rellenado con la sección del usuario -->
-                            <input type="text" id="section_name" class="form-control" value="<?php echo $section_name; ?>" disabled>
-                            <input type="hidden" id="section_id" name="section_id" value="<?php echo $section_id; ?>">
+                            <?php if ($role_id == 1 || $role_id == 4 ) { ?>
+                                <select id="section_id" name="section_id" class="form-control">
+                                    <option value="">Seleccione una sección</option>
+                                    <?php
+                                    $sections_query = mysqli_query($conn, "SELECT section_id, section_name FROM sections WHERE repository_id = '$repository_id'");
+                                    while ($section = mysqli_fetch_array($sections_query)) {
+                                        $selected = ($section['section_id'] == $section_id) ? 'selected' : '';
+                                        echo "<option value='{$section['section_id']}' $selected>{$section['section_name']}</option>";
+                                    }
+                                    ?>
+                                </select>
+                            <?php } else { ?>
+                                <input type="text" id="section_name" class="form-control" value="<?php echo $section_name; ?>" disabled>
+                                <input type="hidden" id="section_id" name="section_id" value="<?php echo $section_id; ?>">
+                            <?php } ?>
                         </div>
                     </div>
                     <div class="modal-footer">
