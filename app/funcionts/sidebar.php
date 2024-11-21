@@ -117,7 +117,7 @@ $role_id = isset($_SESSION['role_id']) ? $_SESSION['role_id'] : null;
                 <li class="nav-item">
                     <a class="nav-link" href="categories.php">
                         <i class="fe fe-calendar fe-16"></i>
-                        <span class="ml-3 item-text">Categorías</span>
+                        <span class="ml-3 item-text">Carpetas</span>
                     </a>
                 </li>
             </ul>
