@@ -47,7 +47,7 @@ if ($user_id) {
     <br><br><br>
     <div id="content">
         <div class="alert alert-info">
-            <h3>Categorías</h3>
+            <h3>Carpetas</h3>
         </div>
 
         <!-- Barra de búsqueda -->
@@ -120,12 +120,12 @@ if ($user_id) {
             <div class="modal-content">
                 <form id="category_form" method="POST" action="save_category.php">
                     <div class="modal-header">
-                        <h4 class="modal-title">Agregar/Editar Categoría</h4>
+                        <h4 class="modal-title">Agregar/Editar Carpeta</h4>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" id="category_id" name="category_id" />
                         <div class="form-group">
-                            <label>Nombre de la Categoría</label>
+                            <label>Nombre de la Carpeta</label>
                             <input type="text" id="category_name" name="category_name" class="form-control" required>
                         </div>
                         <div class="form-group">

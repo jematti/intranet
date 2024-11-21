@@ -35,8 +35,8 @@ $documents_query = mysqli_query($conn, "
                     <th>Nombre del Archivo</th>
                     <th>Tipo de Archivo</th>
                     <th>Fecha de Subida</th>
-                    <th>Categoría</th>
-                    <th>Sección</th>
+                    <th>Carpeta</th>
+                    <th>Unidad</th>
                     <th>Estado</th>
                     <th>Acción</th>
                 </tr>

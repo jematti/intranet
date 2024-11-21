@@ -61,7 +61,7 @@ $role_id = isset($_SESSION['role_id']) ? $_SESSION['role_id'] : null;
                 <li class="nav-item">
                     <a class="nav-link" href="categories.php">
                         <i class="fe fe-calendar fe-16"></i>
-                        <span class="ml-3 item-text">Categorías</span>
+                        <span class="ml-3 item-text">Carpetas</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -77,14 +77,14 @@ $role_id = isset($_SESSION['role_id']) ? $_SESSION['role_id'] : null;
                         <span class="ml-3 item-text">Usuarios</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link" href="roles.php">
                         <i class="fe fe-user fe-16"></i>
                         <span class="ml-3 item-text">Roles</span>
                     </a>
-                </li>
+                </li> -->
             </ul>
-            <p class="text-muted nav-heading mt-4 mb-1"><span>Documentación</span></p>
+            <p class="text-muted nav-heading mt-4 mb-1"><span>Manejo de Documentación</span></p>
             <ul class="navbar-nav flex-fill w-100 mb-2">
                 <li class="nav-item">
                     <a class="nav-link" href="upload_document.php">

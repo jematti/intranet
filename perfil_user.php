@@ -238,7 +238,7 @@ $user = mysqli_fetch_assoc($result);
                             <input type="text" class="form-control-plaintext" id="position" value="<?php echo htmlspecialchars($user['position_name']); ?>" readonly>
                         </div>
                         <div class="form-group">
-                            <label for="repository">Repositorio</label>
+                            <label for="repository">Área Organizacional</label>
                             <input type="text" class="form-control-plaintext" id="repository" value="<?php echo htmlspecialchars($user['repository_name']); ?>" readonly>
                         </div>
 

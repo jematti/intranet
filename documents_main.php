@@ -29,9 +29,9 @@ include_once 'app/complements/header.php';
             <div class="form-row">
                 <!-- Filtro por Repositorio -->
                 <div class="form-group col-md-3">
-                    <label for="repository_id">Repositorio</label>
+                    <label for="repository_id">Área Organizacional</label>
                     <select id="repository_id" class="form-control">
-                        <option value="">Todos los Repositorios</option>
+                        <option value="">Todos las Áreas</option>
                         <?php
                         $query = mysqli_query($conn, "SELECT * FROM `repositories`");
                         while ($repository = mysqli_fetch_array($query)) {
@@ -43,17 +43,17 @@ include_once 'app/complements/header.php';
 
                 <!-- Filtro por Sección -->
                 <div class="form-group col-md-3">
-                    <label for="section_id">Sección</label>
+                    <label for="section_id">Unidad Organizacional</label>
                     <select id="section_id" class="form-control" disabled>
-                        <option value="">Todas las Secciones</option>
+                        <option value="">Todas las Unidades</option>
                     </select>
                 </div>
 
-                <!-- Filtro por Categoría -->
+                <!-- Filtro por Carpeta -->
                 <div class="form-group col-md-3">
-                    <label for="category_id">Categoría</label>
+                    <label for="category_id">Carpeta</label>
                     <select id="category_id" class="form-control" disabled>
-                        <option value="">Todas las Categorías</option>
+                        <option value="">Todas las Carpetas</option>
                     </select>
                 </div>
 

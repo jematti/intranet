@@ -78,11 +78,11 @@ include_once 'app/complements/header.php';
                                                 <input type="hidden" id="section_id" name="section_id" value="<?php echo $fetch['section_id']; ?>">
                                             </div>
 
-                                            <!-- Selector de Categoría (obligatorio), solo categorías activas -->
+                                            <!-- Selector de carpeta (obligatorio), solo carpeta activas -->
                                             <div class="form-group">
-                                                <label for="category_id">Categoría</label>
+                                                <label for="category_id">Carpeta</label>
                                                 <select class="form-control" id="category_id" name="category_id" required>
-                                                    <option value="">Seleccione una Categoría</option>
+                                                    <option value="">Seleccione una Carpeta</option>
                                                 </select>
                                             </div>
 
@@ -135,7 +135,8 @@ include_once 'app/complements/header.php';
                                             $statusButtonText = $file['status'] == 1 ? 'Deshabilitar' : 'Habilitar';
                                         ?>
                                         <tr class="del_file<?php echo $file['store_id']; ?>">
-                                            <td><?php echo substr($file['filename'], 0, 30); ?>...</td>
+                                            <!-- <td><?php echo substr($file['filename'], 0, 50); ?>...</td> -->
+                                            <td><?php echo $file['filename']; ?></td>
                                             <td><?php echo $file['file_type']; ?></td>
                                             <td><?php echo $file['date_uploaded']; ?></td>
                                             <td>

@@ -102,8 +102,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <a href="documents_tree.php" class="text-decoration-none text-dark">
                 <div class="card">
                     <div class="card-body">
-                        <img src="images/normas.jpg" alt="Marco Normativo" class="card-img-top" style="width:60%; margin: 0 auto;">
-                        <p class="card-text mt-3">Marco Normativo</p>
+                        <img src="images/normas.jpg" alt="Repositorio Documental" class="card-img-top" style="width:60%; margin: 0 auto;">
+                        <p class="card-text mt-3">Repositorio Documental</p>
                     </div>
                 </div>
             </a>

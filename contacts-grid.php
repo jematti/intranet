@@ -240,9 +240,9 @@ $result = mysqli_query($conn, $query);
                                         </div>
                                         <?php } ?>
                                         <?php if ($row['birth_date']) { ?>
-                                        <div class="col-md-6">
+                                        <!-- <div class="col-md-6">
                                             <p><i class="fas fa-birthday-cake icon"></i><strong>Fecha de Nacimiento:</strong> <?php echo $row['birth_date']; ?></p>
-                                        </div>
+                                        </div> -->
                                         <?php } ?>
                                         <?php if ($row['address']) { ?>
                                         <div class="col-md-6">

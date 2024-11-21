@@ -115,7 +115,7 @@ $status = $_GET['status'] ?? null;
                     <div class="modal-body">
                         <input type="hidden" id="section_id" name="section_id" />
                         <div class="form-group">
-                            <label>Nombre de la Sección</label>
+                            <label>Nombre de la Unidad Organizacional</label>
                             <input type="text" id="section_name" name="section_name" class="form-control" required>
                         </div>
                         <div class="form-group">

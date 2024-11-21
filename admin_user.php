@@ -211,25 +211,12 @@ if ($role_id == 1) {
                             </div>
                             <div class="row">
                                 <!-- Posición, Repositorio, Sección y Rol -->
+                                
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="position_id">Posición <span class="text-danger">*</span></label>
-                                        <select name="position_id" class="form-control" id="position_id" required>
-                                            <option value="">Seleccione una posición</option>
-                                            <?php
-                                            mysqli_data_seek($positions_query, 0);
-                                            while ($position = mysqli_fetch_array($positions_query)) {
-                                                echo "<option value='{$position['position_id']}'>{$position['position_name']}</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="repository_id">Repositorio <span class="text-danger">*</span></label>
+                                        <label for="repository_id">Área Organizacional<span class="text-danger">*</span></label>
                                         <select name="repository_id" class="form-control" id="repository_id" required onchange="loadSections()">
-                                            <option value="">Seleccione un repositorio</option>
+                                            <option value="">Seleccione un Área</option>
                                             <?php
                                             if ($role_id == 1) {
                                                 // Mostrar todos los repositorios si es Super Admin
@@ -250,10 +237,24 @@ if ($role_id == 1) {
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="section_id">Sección</label>
-                                        <select name="section_id" class="form-control" id="section_id">
-                                            <option value="">Seleccione una sección</option>
+                                        <label for="section_id">Unidad Organizacional <span class="text-danger">*</span></label>
+                                        <select name="section_id" class="form-control" id="section_id" required>
+                                            <option value="">Seleccione una Unidad</option>
                                             <!-- Aquí se cargarán las secciones dinámicamente -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="position_id">Posición <span class="text-danger">*</span></label>
+                                        <select name="position_id" class="form-control" id="position_id" required>
+                                            <option value="">Seleccione una posición</option>
+                                            <?php
+                                            mysqli_data_seek($positions_query, 0);
+                                            while ($position = mysqli_fetch_array($positions_query)) {
+                                                echo "<option value='{$position['position_id']}'>{$position['position_name']}</option>";
+                                            }
+                                            ?>
                                         </select>
                                     </div>
                                 </div>
