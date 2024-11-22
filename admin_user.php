@@ -92,7 +92,7 @@ if ($role_id == 1) {
                           LEFT JOIN `positions` p ON u.position_id = p.position_id 
                           LEFT JOIN `repositories` repo ON u.repository_id = repo.repository_id ";
 
-                if ($role_id == 2) {
+                if ($role_id == 2 || $role_id == 4) {
                     // Solo ver usuarios del mismo repositorio si es Administrador de Página
                     $query .= "WHERE u.repository_id = '$repository_id' AND u.role_id != 1"; // Excluir Super Admin
                 } elseif ($role_id == 1) {
