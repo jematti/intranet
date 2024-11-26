@@ -6,7 +6,7 @@ include_once 'app/complements/header.php';
 // Consulta para obtener los usuarios activos organizados por repositorio
 $query = "
     SELECT 
-        u.user_id, u.firstname, u.lastname, u.ci, u.email, u.phone, u.cell_phone, u.personal_email, 
+        u.user_id, u.firstname, u.lastname, u.ci, u.email, u.phone, u.cell_phone, u.landline_phone,u.repository_phone, u.personal_email, 
         u.birth_date, u.address, u.profile_img, u.status, u.active_status, 
         p.position_name, r.repository_name, r.building, r.department
     FROM user u
@@ -229,9 +229,19 @@ $result = mysqli_query($conn, $query);
                                             <p><i class="fas fa-envelope icon"></i><strong>Correo Personal:</strong> <?php echo $row['personal_email']; ?></p>
                                         </div>
                                         <?php } ?>
+                                        <?php if ($row['landline_phone']) { ?>
+                                        <div class="col-md-6">
+                                            <p><i class="fas fa-phone icon"></i><strong>Teléfono (Personal):</strong> <?php echo $row['landline_phone']; ?></p>
+                                        </div>
+                                        <?php } ?>
+                                        <?php if ($row['repository_phone']) { ?>
+                                        <div class="col-md-6">
+                                            <p><i class="fas fa-phone icon"></i><strong>Teléfono (Repositorio):</strong> <?php echo $row['repository_phone']; ?></p>
+                                        </div>
+                                        <?php } ?>
                                         <?php if ($row['phone']) { ?>
                                         <div class="col-md-6">
-                                            <p><i class="fas fa-phone icon"></i><strong>Teléfono:</strong> <?php echo $row['phone']; ?></p>
+                                            <p><i class="fas fa-phone icon"></i><strong>Teléfono (Interno):</strong> <?php echo $row['phone']; ?></p>
                                         </div>
                                         <?php } ?>
                                         <?php if ($row['cell_phone']) { ?>

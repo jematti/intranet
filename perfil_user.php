@@ -26,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
     $phone = mysqli_real_escape_string($conn, $_POST['phone']);
     $birth_date = mysqli_real_escape_string($conn, $_POST['birth_date']);
     $address = mysqli_real_escape_string($conn, $_POST['address']);
+    $landline_phone = mysqli_real_escape_string($conn, $_POST['landline_phone']);
+    $repository_phone = mysqli_real_escape_string($conn, $_POST['repository_phone']);
 
     $profile_img = NULL;
 
@@ -57,9 +59,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
     }
 
     // Actualizar datos personales
-    $query = "UPDATE user SET ci = '$ci', firstname = '$firstname', lastname = '$lastname', email = '$email',
-              personal_email = '$personal_email', cell_phone = '$cell_phone', phone = '$phone', 
-              birth_date = '$birth_date', address = '$address' WHERE user_id = '$user_id'";
+    $query = "UPDATE user 
+              SET ci = '$ci', firstname = '$firstname', lastname = '$lastname', email = '$email',
+                  personal_email = '$personal_email', cell_phone = '$cell_phone', phone = '$phone', 
+                  birth_date = '$birth_date', address = '$address',
+                  landline_phone = '$landline_phone', repository_phone = '$repository_phone'
+              WHERE user_id = '$user_id'";
     
     if (mysqli_query($conn, $query)) {
         $success = "Datos actualizados exitosamente.";
@@ -74,7 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['change_password'])) {
     $new_password = mysqli_real_escape_string($conn, $_POST['new_password']);
     $confirm_password = mysqli_real_escape_string($conn, $_POST['confirm_password']);
 
-    // Verificar que la contraseña actual sea correcta
     $query = "SELECT password FROM user WHERE user_id = '$user_id'";
     $result = mysqli_query($conn, $query);
     $user = mysqli_fetch_assoc($result);
@@ -99,7 +103,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['change_password'])) {
 // Obtener los datos actuales del usuario
 $query = "
     SELECT u.ci, u.firstname, u.lastname, u.email, u.personal_email, u.cell_phone, u.phone, u.birth_date, 
-           u.address, u.profile_img, p.position_name, r.repository_name
+           u.address, u.landline_phone, u.repository_phone, u.profile_img, 
+           p.position_name, r.repository_name
     FROM user u
     LEFT JOIN positions p ON u.position_id = p.position_id
     LEFT JOIN repositories r ON u.repository_id = r.repository_id
@@ -108,7 +113,6 @@ $query = "
 $result = mysqli_query($conn, $query);
 $user = mysqli_fetch_assoc($result);
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -177,75 +181,110 @@ $user = mysqli_fetch_assoc($result);
                     <!-- Formulario para editar perfil -->
                     <form method="POST" action="" enctype="multipart/form-data">
                         <input type="hidden" name="update_profile" value="1">
-                        <div class="form-group col-md-6">
-                            <label for="profile_img">Actualizar Imagen de Perfil</label>
+
+                        <!-- Actualización de imagen de perfil -->
+                        <div class="form-group col-md-6 mb-4">
+                            <label for="profile_img" class="form-label">Actualizar Imagen de Perfil</label>
                             <input type="file" id="profile_img" name="profile_img" class="form-control" accept="image/*">
                         </div>
-                        <hr class="my-4">
-                        <h5 class="mb-2 mt-4">Datos Personales</h5>
 
-                        <div class="form-group">
-                            <label for="ci">Cédula de Identidad (CI)</label>
-                            <input type="text" class="form-control" id="ci" name="ci" value="<?php echo htmlspecialchars($user['ci']); ?>" required>
-                        </div>
+                        <!-- Información Personal -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-light text-dark">
+                                <h5 class="mb-0">Datos Personales</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="ci" class="form-label">Cédula de Identidad (CI)</label>
+                                        <input type="text" class="form-control" id="ci" name="ci" value="<?php echo htmlspecialchars($user['ci']); ?>" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="birth_date" class="form-label">Fecha de Nacimiento</label>
+                                        <input type="date" class="form-control" id="birth_date" name="birth_date" value="<?php echo htmlspecialchars($user['birth_date']); ?>">
+                                    </div>
+                                </div>
 
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="firstname">Nombre</label>
-                                <input type="text" id="firstname" name="firstname" class="form-control" value="<?php echo htmlspecialchars($user['firstname']); ?>" required>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="lastname">Apellido</label>
-                                <input type="text" id="lastname" name="lastname" class="form-control" value="<?php echo htmlspecialchars($user['lastname']); ?>" required>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-8">
-                                <label for="email">Correo Institucional</label>
-                                <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="phone">Teléfono</label>
-                                <input type="text" class="form-control" id="phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-8">
-                                <label for="birth_date">Fecha de Nacimiento</label>
-                                <input type="date" class="form-control" id="birth_date" name="birth_date" value="<?php echo htmlspecialchars($user['birth_date']); ?>">
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="cell_phone">Celular</label>
-                                <input type="text" class="form-control" id="cell_phone" name="cell_phone" value="<?php echo htmlspecialchars($user['cell_phone']); ?>">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="firstname" class="form-label">Nombre</label>
+                                        <input type="text" id="firstname" name="firstname" class="form-control" value="<?php echo htmlspecialchars($user['firstname']); ?>" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="lastname" class="form-label">Apellido</label>
+                                        <input type="text" id="lastname" name="lastname" class="form-control" value="<?php echo htmlspecialchars($user['lastname']); ?>" required>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="personal_email">Correo Personal</label>
-                            <input type="email" class="form-control" id="personal_email" name="personal_email" value="<?php echo htmlspecialchars($user['personal_email']); ?>">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="address">Dirección</label>
-                            <input type="text" class="form-control" id="address" name="address" value="<?php echo htmlspecialchars($user['address']); ?>">
-                        </div>
-
-                        <!-- Mostrar posición y repositorio (solo lectura) -->
-                        <div class="form-group">
-                            <label for="position">Cargo</label>
-                            <input type="text" class="form-control-plaintext" id="position" value="<?php echo htmlspecialchars($user['position_name']); ?>" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label for="repository">Área Organizacional</label>
-                            <input type="text" class="form-control-plaintext" id="repository" value="<?php echo htmlspecialchars($user['repository_name']); ?>" readonly>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="col-md-12 text-right">
-                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        <!-- Información de Contacto -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-light text-dark">
+                                <h5 class="mb-0">Información de Contacto</h5>
                             </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="email" class="form-label">Correo Institucional</label>
+                                        <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="personal_email" class="form-label">Correo Personal</label>
+                                        <input type="email" class="form-control" id="personal_email" name="personal_email" value="<?php echo htmlspecialchars($user['personal_email']); ?>">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="phone" class="form-label">Teléfono</label>
+                                        <input type="text" class="form-control" id="phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="cell_phone" class="form-label">Celular</label>
+                                        <input type="text" class="form-control" id="cell_phone" name="cell_phone" value="<?php echo htmlspecialchars($user['cell_phone']); ?>">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="landline_phone" class="form-label">Teléfono Fijo</label>
+                                        <input type="text" class="form-control" id="landline_phone" name="landline_phone" value="<?php echo htmlspecialchars($user['landline_phone']); ?>">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="repository_phone" class="form-label">Teléfono Fijo del Repositorio</label>
+                                        <input type="text" class="form-control" id="repository_phone" name="repository_phone" value="<?php echo htmlspecialchars($user['repository_phone']); ?>">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="address" class="form-label">Dirección</label>
+                                        <input type="text" class="form-control" id="address" name="address" value="<?php echo htmlspecialchars($user['address']); ?>">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información de Posición y Repositorio -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-light text-dark">
+                                <h5 class="mb-0">Detalles Organizacionales</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="position" class="form-label">Cargo</label>
+                                        <input type="text" class="form-control-plaintext" id="position" value="<?php echo htmlspecialchars($user['position_name']); ?>" readonly>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="repository" class="form-label">Área Organizacional</label>
+                                        <input type="text" class="form-control-plaintext" id="repository" value="<?php echo htmlspecialchars($user['repository_name']); ?>" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón de Guardar Cambios -->
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary btn-lg">Guardar Cambios</button>
                         </div>
                     </form>
 
