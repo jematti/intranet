@@ -168,13 +168,17 @@ if ($role_id == 1) {
                                         <label for="cell_phone">Celular</label>
                                         <input type="text" name="cell_phone" class="form-control" id="cell_phone"/>
                                     </div>
-                                    <div class="form-group">
+                                    <!-- <div class="form-group">
                                         <label for="landline_phone">Teléfono Fijo</label>
                                         <input type="text" name="landline_phone" class="form-control" id="landline_phone"/>
-                                    </div>
+                                    </div> -->
                                     <div class="form-group">
                                         <label for="repository_phone">Teléfono Fijo del Repositorio</label>
                                         <input type="text" name="repository_phone" class="form-control" id="repository_phone"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="profile_img">Imagen de Perfil (Opcional)</label>
+                                        <input type="file" name="profile_img" class="form-control" id="profile_img" accept="image/*">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -203,10 +207,7 @@ if ($role_id == 1) {
                                         <label for="address">Dirección</label>
                                         <input type="text" name="address" class="form-control" id="address"/>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="profile_img">Imagen de Perfil (Opcional)</label>
-                                        <input type="file" name="profile_img" class="form-control" id="profile_img" accept="image/*">
-                                    </div>
+                                    
                                 </div>
                             </div>
                             <div class="row">

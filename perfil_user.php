@@ -244,10 +244,10 @@ $user = mysqli_fetch_assoc($result);
                                         <label for="cell_phone" class="form-label">Celular</label>
                                         <input type="text" class="form-control" id="cell_phone" name="cell_phone" value="<?php echo htmlspecialchars($user['cell_phone']); ?>">
                                     </div>
-                                    <div class="col-md-4 mb-3">
+                                    <!-- <div class="col-md-4 mb-3">
                                         <label for="landline_phone" class="form-label">Teléfono Fijo</label>
                                         <input type="text" class="form-control" id="landline_phone" name="landline_phone" value="<?php echo htmlspecialchars($user['landline_phone']); ?>">
-                                    </div>
+                                    </div> -->
                                 </div>
 
                                 <div class="row">

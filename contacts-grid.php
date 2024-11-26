@@ -229,11 +229,6 @@ $result = mysqli_query($conn, $query);
                                             <p><i class="fas fa-envelope icon"></i><strong>Correo Personal:</strong> <?php echo $row['personal_email']; ?></p>
                                         </div>
                                         <?php } ?>
-                                        <?php if ($row['landline_phone']) { ?>
-                                        <div class="col-md-6">
-                                            <p><i class="fas fa-phone icon"></i><strong>Teléfono (Personal):</strong> <?php echo $row['landline_phone']; ?></p>
-                                        </div>
-                                        <?php } ?>
                                         <?php if ($row['repository_phone']) { ?>
                                         <div class="col-md-6">
                                             <p><i class="fas fa-phone icon"></i><strong>Teléfono (Repositorio):</strong> <?php echo $row['repository_phone']; ?></p>

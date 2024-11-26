@@ -13,7 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $personal_email = mysqli_real_escape_string($conn, $_POST['personal_email']);
     $cell_phone = mysqli_real_escape_string($conn, $_POST['cell_phone']);
-    $landline_phone = mysqli_real_escape_string($conn, $_POST['landline_phone']);
+    // Comentado para deshabilitar landline_phone
+    // $landline_phone = mysqli_real_escape_string($conn, $_POST['landline_phone']);
     $repository_phone = mysqli_real_escape_string($conn, $_POST['repository_phone']);
     $phone = mysqli_real_escape_string($conn, $_POST['phone']);
     $birth_date = mysqli_real_escape_string($conn, $_POST['birth_date']);
@@ -101,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $update_query = "UPDATE `user` 
                          SET `ci` = '$ci', `firstname` = '$firstname', `lastname` = '$lastname',
                              `username` = '$username', `email` = '$email', `personal_email` = '$personal_email', 
-                             `cell_phone` = '$cell_phone', `landline_phone` = '$landline_phone', 
+                             `cell_phone` = '$cell_phone',
                              `repository_phone` = '$repository_phone', `phone` = '$phone', `birth_date` = '$birth_date',
                              `address` = '$address', `position_id` = $position_id, `repository_id` = $repository_id, 
                              `section_id` = $section_id, `role_id` = $role_id
@@ -120,11 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $password_hash = md5($password); // Hash de la contraseña
 
         $insert_query = "INSERT INTO `user` (`ci`, `firstname`, `lastname`, `username`, `password`, `email`, 
-                                              `personal_email`, `cell_phone`, `landline_phone`, `repository_phone`, 
+                                              `personal_email`, `cell_phone`, 
+                                              `repository_phone`, 
                                               `phone`, `birth_date`, `address`, `position_id`, `repository_id`, 
                                               `section_id`, `role_id`, `status`, `active_status`, `profile_img`)
                          VALUES ('$ci', '$firstname', '$lastname', '$username', '$password_hash', '$email', 
-                                 '$personal_email', '$cell_phone', '$landline_phone', '$repository_phone', '$phone', 
+                                 '$personal_email', '$cell_phone', '$repository_phone', '$phone', 
                                  '$birth_date', '$address', $position_id, $repository_id, $section_id, $role_id, 
                                  'active', 1, '$profile_img')";
         
