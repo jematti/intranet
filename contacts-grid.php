@@ -221,7 +221,7 @@ $result = mysqli_query($conn, $query);
                                         <?php } ?>
                                         <?php if ($row['email']) { ?>
                                         <div class="col-md-6">
-                                            <p><i class="fas fa-envelope icon"></i><strong>Email Institucional:</strong> <?php echo $row['email']; ?></p>
+                                            <p><i class="fas fa-envelope icon"></i><strong>Correo Institucional:</strong> <?php echo $row['email']; ?></p>
                                         </div>
                                         <?php } ?>
                                         <?php if ($row['personal_email']) { ?>
