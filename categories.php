@@ -11,6 +11,11 @@ $section_name = '';
 $role_name = '';
 $user_id = $_SESSION['user_id'] ?? null;
 
+// Manejar mensajes de notificación
+$message = $_SESSION['message'] ?? '';
+$message_type = $_SESSION['message_type'] ?? '';
+unset($_SESSION['message'], $_SESSION['message_type']);
+
 if ($user_id) {
     $query_user = mysqli_query($conn, "SELECT r.repository_id, r.repository_name, s.section_id, s.section_name, ro.role_name
                                        FROM user u 
@@ -27,7 +32,6 @@ if ($user_id) {
         $role_name = $row_user['role_name'];
     }
 }
-
 ?>
 
 <!-- navegador principal -->
@@ -42,6 +46,8 @@ if ($user_id) {
 <?php include 'app/funcionts/sidebar.php'; ?>
 <!-- fin de barra de navegación lateral -->
 
+
+
 <!-- contenido -->
 <main role="main" class="main-content">
     <br><br><br>
@@ -50,6 +56,12 @@ if ($user_id) {
             <h3>Carpetas</h3>
         </div>
 
+        <!-- Mostrar mensaje de notificación -->
+        <?php if ($message): ?>
+        <div class="alert alert-<?php echo $message_type; ?> text-center" role="alert">
+            <?php echo $message; ?>
+        </div>
+        <?php endif; ?>
         <!-- Barra de búsqueda -->
         <div class="form-group">
             <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre" onkeyup="searchTable()">

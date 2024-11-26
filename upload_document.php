@@ -71,11 +71,25 @@ include_once 'app/complements/header.php';
                                                 <input type="hidden" name="repository_id" value="<?php echo $fetch['repository_id']; ?>">
                                             </div>
 
-                                            <!-- Unidad Organizacional (automática, no editable) -->
+                                            <!-- Unidad Organizacional -->
                                             <div class="form-group">
                                                 <label for="section_name">Unidad Organizacional</label>
-                                                <input type="text" id="section_name" class="form-control" value="<?php echo $fetch['section_name']; ?>" readonly>
-                                                <input type="hidden" id="section_id" name="section_id" value="<?php echo $fetch['section_id']; ?>">
+                                                <?php if ($fetch['role_id'] == 1 || $fetch['role_id'] == 4) { // 1 para Super Admin, 4 para Administrador Repositorio ?>
+                                                    <select id="section_id" name="section_id" class="form-control">
+                                                        <option value="">Seleccione una Unidad Organizacional</option>
+                                                        <?php
+                                                        // Cargar las secciones asociadas al repositorio
+                                                        $sections_query = mysqli_query($conn, "SELECT * FROM sections WHERE repository_id = '{$fetch['repository_id']}' AND status = 1") or die(mysqli_error($conn));
+                                                        while ($section = mysqli_fetch_array($sections_query)) {
+                                                            $selected = ($section['section_id'] == $fetch['section_id']) ? 'selected' : '';
+                                                            echo "<option value='{$section['section_id']}' $selected>{$section['section_name']}</option>";
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                <?php } else { ?>
+                                                    <input type="text" id="section_name" class="form-control" value="<?php echo $fetch['section_name']; ?>" readonly>
+                                                    <input type="hidden" id="section_id" name="section_id" value="<?php echo $fetch['section_id']; ?>">
+                                                <?php } ?>
                                             </div>
 
                                             <!-- Selector de carpeta (obligatorio), solo carpeta activas -->
@@ -234,5 +248,43 @@ function enableDocument(storeId) {
         });
     }
 }
+$('#repository_id').on('change', function() {
+    var repository_id = $(this).val();
+    if (repository_id) {
+        $.post('get_sections.php', { repository_id: repository_id }, function(response) {
+            var sections = JSON.parse(response);
+            $('#section_id').empty().append('<option value="">Seleccione una Unidad Organizacional</option>');
+            sections.forEach(function(section) {
+                $('#section_id').append('<option value="' + section.section_id + '">' + section.section_name + '</option>');
+            });
+        });
+    } else {
+        $('#section_id').empty().append('<option value="">Seleccione una Unidad Organizacional</option>');
+    }
+});
+
+// Escuchar cambios en el campo section_id para cargar las categorías
+$('#section_id').on('change', function() {
+    var section_id = $(this).val(); // Obtener el ID de la sección seleccionada
+
+    if (section_id) {
+        // Realizar una solicitud AJAX para obtener las categorías asociadas
+        $.post('get_categories.php', { section_id: section_id }, function(response) {
+            var categories = JSON.parse(response); // Convertir la respuesta a JSON
+            $('#category_id').empty().append('<option value="">Seleccione una Carpeta</option>'); // Limpiar y agregar opción por defecto
+            
+            // Iterar sobre las categorías y agregarlas al select
+            categories.forEach(function(category) {
+                if (category.status == 1) { // Verificar que la categoría esté activa
+                    $('#category_id').append('<option value="' + category.category_id + '">' + category.category_name + '</option>');
+                }
+            });
+        });
+    } else {
+        // Limpiar el campo de categorías si no hay sección seleccionada
+        $('#category_id').empty().append('<option value="">Seleccione una Carpeta</option>');
+    }
+});
+
 </script>
 

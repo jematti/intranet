@@ -1,6 +1,7 @@
 <?php
 // Incluir la conexión a la base de datos
 include("conexion_db.php");
+session_start(); // Iniciar la sesión para manejar los mensajes de notificación
 
 // Comprobar si el formulario fue enviado
 if (isset($_POST['save'])) {
@@ -9,45 +10,48 @@ if (isset($_POST['save'])) {
     $category_name = mysqli_real_escape_string($conn, $_POST['category_name']);
     $section_id = isset($_POST['section_id']) ? intval($_POST['section_id']) : 0;
 
-    // Mostrar alerta con el valor de section_id
-    //echo "<script>alert('Valor de section_id: " . $section_id . "');</script>";
-    
-    // Verificar si el section_id es válido
-    //if (empty($section_id)) {
-    //    echo "<script>alert('Error: Sección no válida.'); window.location = 'categories.php';</script>";
-    //    exit; // Detener la ejecución si section_id no es válido
-    //}
+    try {
+        // Comprobar si estamos creando una nueva categoría o actualizando una existente
+        if ($category_id > 0) {
+            // Actualizar categoría existente
+            $query = "UPDATE `categories` SET `category_name` = ?, `section_id` = ? WHERE `category_id` = ?";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param('sii', $category_name, $section_id, $category_id);
 
-    // Comprobar si estamos creando una nueva categoría o actualizando una existente
-    if ($category_id > 0) {
-        // Actualizar categoría existente
-        $query = "UPDATE `categories` SET `category_name` = ?, `section_id` = ? WHERE `category_id` = ?";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('sii', $category_name, $section_id, $category_id);
-        
-        if ($stmt->execute()) {
-            echo "<script>alert('Categoría actualizada exitosamente'); window.location = 'categories.php';</script>";
+            if ($stmt->execute()) {
+                $_SESSION['message'] = "Categoría actualizada exitosamente.";
+                $_SESSION['message_type'] = "success";
+            } else {
+                throw new Exception("Error al actualizar la categoría.");
+            }
         } else {
-            echo "<script>alert('Error al actualizar la categoría'); window.location = 'categories.php';</script>";
+            // Insertar nueva categoría
+            $query = "INSERT INTO `categories` (`category_name`, `section_id`, `status`) VALUES (?, ?, 1)";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param('si', $category_name, $section_id);
+
+            if ($stmt->execute()) {
+                $_SESSION['message'] = "Categoría agregada exitosamente.";
+                $_SESSION['message_type'] = "success";
+            } else {
+                throw new Exception("Error al agregar la categoría.");
+            }
         }
-    } else {
-        // Insertar nueva categoría
-        $query = "INSERT INTO `categories` (`category_name`, `section_id`, `status`) VALUES (?, ?, 1)";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('si', $category_name, $section_id);
-        
-        if ($stmt->execute()) {
-            echo "<script>alert('Categoría agregada exitosamente'); window.location = 'categories.php';</script>";
-        } else {
-            echo "<script>alert('Error al agregar la categoría'); window.location = 'categories.php';</script>";
+    } catch (Exception $e) {
+        $_SESSION['message'] = $e->getMessage();
+        $_SESSION['message_type'] = "danger";
+    } finally {
+        // Cerrar la declaración
+        if (isset($stmt)) {
+            $stmt->close();
         }
+
+        // Redirigir de vuelta a categories.php
+        header("Location: categories.php");
+        exit;
     }
-
-    // Cerrar la declaración
-    $stmt->close();
 }
 
 // Cerrar la conexión a la base de datos
 mysqli_close($conn);
-
 ?>
