@@ -1,29 +1,49 @@
 <?php
-
 include("conexion_db.php");
 include_once 'app/complements/header.php';
 
-// Consulta para obtener los usuarios activos organizados por repositorio
+// Verificar si se enviaron parámetros de búsqueda
+$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+$repository_filter = isset($_GET['repository_filter']) ? mysqli_real_escape_string($conn, $_GET['repository_filter']) : '';
+$position_filter = isset($_GET['position_filter']) ? mysqli_real_escape_string($conn, $_GET['position_filter']) : '';
+
+// Consulta para obtener los usuarios activos con filtros aplicados
 $query = "
     SELECT 
-        u.user_id, u.firstname, u.lastname, u.ci, u.email, u.phone, u.cell_phone, u.landline_phone,u.repository_phone, u.personal_email, 
+        u.user_id, u.firstname, u.lastname, u.ci, u.email, u.phone, u.cell_phone, u.landline_phone, u.repository_phone, u.personal_email, 
         u.birth_date, u.address, u.profile_img, u.status, u.active_status, 
         p.position_name, r.repository_name, r.building, r.department
     FROM user u
     LEFT JOIN positions p ON u.position_id = p.position_id
     LEFT JOIN repositories r ON u.repository_id = r.repository_id
     WHERE u.active_status = 1
-    ORDER BY r.repository_name, u.firstname
 ";
+
+// Agregar filtros
+if ($search) {
+    $query .= " AND (u.firstname LIKE '%$search%' OR u.lastname LIKE '%$search%' OR u.email LIKE '%$search%' OR u.phone LIKE '%$search%')";
+}
+if ($repository_filter) {
+    $query .= " AND r.repository_id = '$repository_filter'";
+}
+if ($position_filter) {
+    $query .= " AND p.position_id = '$position_filter'";
+}
+
+$query .= " ORDER BY r.repository_name, u.firstname";
 $result = mysqli_query($conn, $query);
+
+// Obtener datos para filtros
+$repositories = mysqli_query($conn, "SELECT * FROM repositories WHERE status = 1");
+$positions = mysqli_query($conn, "SELECT * FROM positions WHERE status = 1");
 ?>
 
 <!-- Incluir FontAwesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 
-<!-- navegador principal -->
-<?php include 'app/complements/navbar-main.php' ?>
-<!-- fin navegador principal -->
+<!-- Navegador principal -->
+<?php include 'app/complements/navbar-main.php'; ?>
+<!-- Fin navegador principal -->
 
 <head>
     <style>
@@ -152,11 +172,45 @@ $result = mysqli_query($conn, $query);
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-12">
+                <!-- Barra de búsqueda y filtros -->
                 <div class="row align-items-center my-4">
                     <div class="col">
                         <h2 class="h3 mb-0 page-title">Agenda de Contactos</h2>
                     </div>
                 </div>
+                <form method="GET" action="" class="mb-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" name="search" class="form-control" placeholder="Buscar por nombre, correo o teléfono" value="<?php echo $search; ?>">
+                        </div>
+                        <div class="col-md-3">
+                            <select name="repository_filter" class="form-control">
+                                <option value="">Filtrar por repositorio</option>
+                                <?php while ($repo = mysqli_fetch_assoc($repositories)) { ?>
+                                    <option value="<?php echo $repo['repository_id']; ?>" <?php echo ($repository_filter == $repo['repository_id']) ? 'selected' : ''; ?>>
+                                        <?php echo $repo['repository_name']; ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="position_filter" class="form-control">
+                                <option value="">Filtrar por posición</option>
+                                <?php while ($position = mysqli_fetch_assoc($positions)) { ?>
+                                    <option value="<?php echo $position['position_id']; ?>" <?php echo ($position_filter == $position['position_id']) ? 'selected' : ''; ?>>
+                                        <?php echo $position['position_name']; ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Buscar</button>
+                            <a href="contacts-grid.php" class="btn btn-secondary"><i class="fas fa-sync-alt"></i> Limpiar</a>
+                        </div>
+                    </div>
+                </form>
 
                 <!-- Usuarios organizados por repositorio -->
                 <?php
