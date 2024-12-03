@@ -67,6 +67,7 @@ include_once 'app/complements/header.php';
                                                 data-email="' . $row['email'] . '" 
                                                 data-phone="' . $row['phone'] . '" 
                                                 data-cell-phone="' . $row['cell_phone'] . '" 
+                                                data-repository-phone="' . $row['repository_phone'] . '" 
                                                 data-address="' . $row['address'] . '" 
                                                 data-profile-img="' . ($row['profile_img'] ? 'uploads/profile_images/' . $row['profile_img'] : './assets/avatars/face.jpg') . '"
                                                 data-toggle="modal" 
@@ -103,22 +104,25 @@ include_once 'app/complements/header.php';
                     <img id="modal-profile-img" src="" alt="Profile Image" class="rounded-circle" style="width:120px; height:120px; border: 4px solid #ffffff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
                 </div>
                 <div class="row mt-4">
-                    <div class="col-md-6">
+                    <div id="modal-name-container" class="col-md-6" style="display:none;">
                         <p><i class="fas fa-user icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Nombre:</strong> <span id="modal-fullname"></span></p>
                     </div>
-                    <div class="col-md-6">
+                    <div id="modal-ci-container" class="col-md-6" style="display:none;">
                         <p><i class="fas fa-id-card icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Cédula de Identidad:</strong> <span id="modal-ci"></span></p>
                     </div>
-                    <div class="col-md-6">
+                    <div id="modal-email-container" class="col-md-6" style="display:none;">
                         <p><i class="fas fa-envelope icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Correo Institucional:</strong> <span id="modal-email"></span></p>
                     </div>
-                    <div class="col-md-6">
-                        <p><i class="fas fa-phone icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Teléfono:</strong> <span id="modal-phone"></span></p>
+                    <div id="modal-phone-container" class="col-md-6" style="display:none;">
+                        <p><i class="fas fa-phone icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Teléfono (Interno):</strong> <span id="modal-phone"></span></p>
                     </div>
-                    <div class="col-md-6">
+                    <div id="modal-repository-phone-container" class="col-md-6" style="display:none;">
+                        <p><i class="fas fa-phone icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Teléfono Repositorio:</strong> <span id="modal-repository-phone"></span></p>
+                    </div>
+                    <div id="modal-cell-phone-container" class="col-md-6" style="display:none;">
                         <p><i class="fas fa-mobile-alt icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Celular:</strong> <span id="modal-cell-phone"></span></p>
                     </div>
-                    <div class="col-md-6">
+                    <div id="modal-address-container" class="col-md-6" style="display:none;">
                         <p><i class="fas fa-home icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Dirección:</strong> <span id="modal-address"></span></p>
                     </div>
                 </div>
@@ -126,6 +130,7 @@ include_once 'app/complements/header.php';
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
             </div>
+
         </div>
     </div>
 </div>
@@ -134,13 +139,30 @@ include_once 'app/complements/header.php';
     document.querySelectorAll('.view-details').forEach(button => {
         button.addEventListener('click', function () {
             // Actualizar los datos del modal dinámico
-            document.getElementById('modal-profile-img').src = this.dataset.profileImg;
-            document.getElementById('modal-fullname').innerText = this.dataset.firstname + ' ' + this.dataset.lastname;
-            document.getElementById('modal-ci').innerText = this.dataset.ci || 'N/A';
-            document.getElementById('modal-email').innerText = this.dataset.email || 'N/A';
-            document.getElementById('modal-phone').innerText = this.dataset.phone || 'N/A';
-            document.getElementById('modal-cell-phone').innerText = this.dataset.cellPhone || 'N/A';
-            document.getElementById('modal-address').innerText = this.dataset.address || 'N/A';
+            const fields = [
+                { id: 'modal-profile-img', value: this.dataset.profileImg || './assets/avatars/face.jpg', isSrc: true },
+                { id: 'modal-fullname', value: `${this.dataset.firstname || ''} ${this.dataset.lastname || ''}`.trim(), container: 'modal-name-container' },
+                { id: 'modal-ci', value: this.dataset.ci, container: 'modal-ci-container' },
+                { id: 'modal-email', value: this.dataset.email, container: 'modal-email-container' },
+                { id: 'modal-phone', value: this.dataset.phone, container: 'modal-phone-container' },
+                { id: 'modal-repository-phone', value: this.dataset.repositoryPhone, container: 'modal-repository-phone-container' },
+                { id: 'modal-cell-phone', value: this.dataset.cellPhone, container: 'modal-cell-phone-container' },
+                { id: 'modal-address', value: this.dataset.address, container: 'modal-address-container' }
+            ];
+
+            fields.forEach(field => {
+                const element = document.getElementById(field.id);
+                const container = field.container ? document.getElementById(field.container) : null;
+
+                if (field.isSrc) {
+                    element.src = field.value;
+                } else if (field.value) {
+                    element.innerText = field.value;
+                    if (container) container.style.display = 'block';
+                } else if (container) {
+                    container.style.display = 'none';
+                }
+            });
         });
     });
 </script>
