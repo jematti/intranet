@@ -13,7 +13,7 @@ if (isset($_POST['login'])) {
     $username = mysqli_real_escape_string($conn, $username);
 
     // Preparar y ejecutar la consulta para buscar el usuario
-    $stmt = $conn->prepare("SELECT user_id, firstname, lastname, role_id FROM `user` WHERE `username` = ? AND `password` = ?");
+    $stmt = $conn->prepare("SELECT user_id, firstname, lastname_father, role_id FROM `user` WHERE `username` = ? AND `password` = ?");
     $stmt->bind_param("ss", $username, $password);
     $stmt->execute();
     $stmt->store_result();

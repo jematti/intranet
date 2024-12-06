@@ -56,26 +56,60 @@ CREATE TABLE IF NOT EXISTS `sections` (
 -- Crear tabla unificada `user` que incluye administradores y empleados
 CREATE TABLE IF NOT EXISTS `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
-  `ci` varchar(20) NOT NULL, -- Cédula de Identidad
-  `firstname` varchar(50) NOT NULL,
-  `lastname` varchar(50) NOT NULL,
-  `username` varchar(20) NOT NULL,
-  `password` varchar(32) NOT NULL, -- Almacenamiento del hash MD5 de la contraseña
-  `email` varchar(100) NOT NULL, -- Correo institucional
-  `personal_email` varchar(100) DEFAULT NULL, -- Correo personal
-  `phone` varchar(15) DEFAULT NULL, -- Celular
-  `cell_phone` varchar(15) DEFAULT NULL, -- Celular
-  `landline_phone` varchar(15) DEFAULT NULL, -- Teléfono fijo del usuario 
-  `repository_phone` varchar(15) DEFAULT NULL, -- Teléfono fijo del repositorio
-  `birth_date` DATE DEFAULT NULL, -- Fecha de nacimiento
-  `address` varchar(255) DEFAULT NULL,
-  `status` varchar(20) NOT NULL,
-  `profile_img` varchar(255) DEFAULT NULL,
-  `active_status` TINYINT(1) NOT NULL DEFAULT '1', -- 1 para activo, 0 para inactivo
-  `position_id` int(11) DEFAULT NULL, -- Relación con la tabla positions (si es empleado)
-  `repository_id` int(11) DEFAULT NULL, -- Relación con la tabla repositories (si es empleado)
-  `section_id` int(11) DEFAULT NULL, -- Relación con la tabla sections (se añade el campo para la sección)
-  `role_id` int(11) NOT NULL, -- Relación con la tabla roles
+  `profile_img` varchar(255) DEFAULT NULL, /* Imagen de perfil */
+  `firstname` varchar(50) NOT NULL, /* Primer nombre */
+  `middlename` varchar(50) DEFAULT NULL, /* Segundo nombre */
+  `thirdname` varchar(50) DEFAULT NULL, /* Tercer nombre */
+  `lastname_father` varchar(50) NOT NULL, /* Apellido paterno */
+  `lastname_mother` varchar(50) NOT NULL, /* Apellido materno */
+  `married_lastname` varchar(50) DEFAULT NULL, /* Apellido de casada */
+  `marital_status` varchar(20) DEFAULT NULL, /* Estado civil */
+  `username` varchar(20) NOT NULL, /* Nombre de usuario */
+  `nationality` varchar(50) DEFAULT NULL, /* Nacionalidad */
+  `gender` varchar(10) DEFAULT NULL, /* Sexo */
+  `blood_type` varchar(5) DEFAULT NULL, /* Grupo sanguíneo */
+  `password` varchar(32) NOT NULL, /* Hash MD5 de la contraseña */
+  `email` varchar(100) NOT NULL, /* Correo institucional */
+  `personal_email` varchar(100) DEFAULT NULL, /* Correo personal */
+  `phone` varchar(15) DEFAULT NULL, /* Teléfono interno repositorio */
+  `cell_phone` varchar(15) DEFAULT NULL, /* Celular */
+  `landline_phone` varchar(15) DEFAULT NULL, /* Teléfono fijo del usuario */
+  `repository_phone` varchar(15) DEFAULT NULL, /* Teléfono fijo del repositorio */
+  /*tipo de documento*/
+  `document_type` varchar(50) NOT NULL, /* Tipo de documento */
+  `document_number` varchar(20) NOT NULL, /* Número de documento */
+  `document_expiry_date` DATE DEFAULT NULL, /* Fecha de caducidad del documento */
+  `document_issued_in` varchar(50) DEFAULT NULL, /* Lugar de expedición del documento */
+  /*ubicacion*/
+  `birth_date` DATE DEFAULT NULL, /* Fecha de nacimiento */
+  `birth_country` varchar(50) DEFAULT NULL, /* País de nacimiento */
+  `birth_city` varchar(50) DEFAULT NULL, /* Ciudad de nacimiento */
+  `birth_province` varchar(50) DEFAULT NULL, /* Provincia de nacimiento */
+  `residence_department` varchar(50) DEFAULT NULL, /* Departamento de residencia */
+  `residence_municipality` varchar(50) DEFAULT NULL, /* Municipio */
+  `residence_zone` varchar(50) DEFAULT NULL, /* Zona de domicilio */
+  `residence_street` varchar(100) DEFAULT NULL, /* Avenida o calle */
+  `residence_number` varchar(10) DEFAULT NULL, /* Número */
+  `residence_building` varchar(100) DEFAULT NULL, /* Edificio */
+  `residence_floor` varchar(10) DEFAULT NULL, /* Piso */
+  `residence_apartment` varchar(10) DEFAULT NULL, /* Número de departamento */
+  /*contacto emergencia*/
+  `emergency_contact_name` varchar(100) DEFAULT NULL, /* Nombre de contacto de emergencia */
+  `emergency_contact_phone` varchar(15) DEFAULT NULL, /* Número de contacto de emergencia */
+  `emergency_contact_relationship` varchar(50) DEFAULT NULL, /* Relación con el contacto de emergencia */
+  /*educacion basica*/
+  `basic_education_course` varchar(100) DEFAULT NULL, /* Último curso vencido en educación básica */
+  `basic_education_year` YEAR DEFAULT NULL, /* Año del último curso vencido en educación básica */
+  `basic_education_institution` varchar(100) DEFAULT NULL, /* Colegio o institución donde cursó la educación básica */
+  `has_basic_degree` TINYINT(1) DEFAULT NULL, /* Obtuvo título de educación básica */
+  `basic_education_location` varchar(100) DEFAULT NULL, /* Lugar donde se cursó la educación básica */
+  /*datos usuarios*/
+  `status` varchar(20) NOT NULL, /* Estado (activo/inactivo, etc.) */
+  `active_status` TINYINT(1) NOT NULL DEFAULT '1', /* 1 para activo, 0 para inactivo */
+  `position_id` int(11) DEFAULT NULL, /* Relación con la tabla positions */
+  `repository_id` int(11) DEFAULT NULL, /* Relación con la tabla repositories */
+  `section_id` int(11) DEFAULT NULL, /* Relación con la tabla sections */
+  `role_id` int(11) NOT NULL, /* Relación con la tabla roles */
   PRIMARY KEY (`user_id`),
   FOREIGN KEY (`position_id`) REFERENCES `positions`(`position_id`) ON DELETE SET NULL,
   FOREIGN KEY (`repository_id`) REFERENCES `repositories`(`repository_id`) ON DELETE SET NULL,
@@ -266,60 +300,48 @@ INSERT INTO `sections` (`section_name`, `repository_id`, `status`) VALUES
 ('Administración', 10, 1);
 
 
-INSERT INTO `user` (`ci`, `firstname`, `lastname`, `username`, `password`, `email`, `phone`, `cell_phone`, `landline_phone`, `repository_phone`, `address`, `status`, `active_status`, `role_id`, `position_id`, `repository_id`, `section_id`)
+INSERT INTO `user` (`firstname`, `lastname_father`, `username`, `password`, `status`, `active_status`, `role_id`, `position_id`, `repository_id`, `section_id`)
 VALUES
-('6799225', 'Adrian', 'Villarreal', '6799225', MD5('6799225'), 'adrian@empresa.com', '1402', NULL, NULL, NULL, '', 'active', 1, 2, 1, 1, 4),
-('4796382', 'Adriana', 'Sandalio Viscarra', '4796382', MD5('4796382'), 'adriana@empresa.com', '1504', NULL, NULL, NULL, '', 'active', 1, 3, 2, 1, 5),
-('4922527', 'Angela', 'Aduviri Arroyo', '4922527', MD5('4922527'), 'angela@empresa.com', '1104', NULL, NULL, NULL, '', 'active', 1, 3, 3, 1, 1),
-('4329603', 'Beatriz Lidia', 'Mamani Abelo', '4329603', MD5('4329603'), 'beatriz@empresa.com', '1308', NULL, NULL, NULL, '', 'active', 1, 2, 4, 1, 8),
-('3407802', 'Carola', 'Gutierrez Soto', '3407802', MD5('3407802'), 'carola@empresa.com', '1308', NULL, NULL, NULL, '', 'active', 1, 3, 5, 1, 10),
-('2682167', 'Cristobal', 'Apaza Bautista', '2682167', MD5('2682167'), 'cristobal@empresa.com', '1321', NULL, NULL, NULL, '', 'active', 1, 3, 6, 1, 10),
-('6736666', 'Daniel Sergio', 'Aramayo Villarroel', '6736666', MD5('6736666'), 'daniel@empresa.com', '1328', NULL, NULL, NULL, '', 'active', 1, 3, 7, 1, 11),
-('3358957', 'David', 'Aruquipa Pérez', '3358957', MD5('3358957'), 'david@empresa.com', '1501', NULL, NULL, NULL, '', 'active', 1, 3, 8, 1, 5),
-('6190120', 'Denisse', 'Velásquez Silva', '6190120', MD5('6190120'), 'denisse@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 9, 9, 5),
-('6985867', 'Elian', 'Álvarez Gómez', '6985867', MD5('6985867'), 'elian@empresa.com', '1205', NULL, NULL, NULL, '', 'active', 1, 3, 10, 1, 3),
-('7050731', 'Estefani', 'Huiza Fernández', '7050731', MD5('7050731'), 'estefani@empresa.com', '1322', NULL, NULL, NULL, '', 'active', 1, 3, 12, 1, 1),
-('3325512', 'Estela', 'Ojeda Loza', '3325512', MD5('3325512'), 'estela@empresa.com', '1327', NULL, NULL, NULL, '', 'active', 1, 3, 13, 1, 10),
-('2689803', 'Eustaquio', 'Vera Copa', '2689803', MD5('2689803'), 'eustaquio@empresa.com', '1102', NULL, NULL, NULL, '', 'active', 1, 3, 14, 1, 1),
-('6123695', 'Evelin', 'Troche Espinoza', '6123695', MD5('6123695'), 'evelin@empresa.com', '1204', NULL, NULL, NULL, '', 'active', 1, 3, 15, 1, 3),
-('6876773', 'Franco', 'Villatarco Zambrana', '6876773', MD5('6876773'), 'franco@empresa.com', '1320', NULL, NULL, NULL, '', 'active', 1, 3, 16, 1, 9),
-('7008958', 'Gabriela', 'Fuentes Ramos', '7008958', MD5('7008958'), 'gabriela@empresa.com', '1325', NULL, NULL, NULL, '', 'active', 1, 2, 17, 1, 10),
-('2543742', 'Grover', 'Choque Quispe', '2543742', MD5('2543742'), 'grover@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 18, 9, 5),
-('3462509', 'Hector', 'Sempertegui Alvarez', '3462509', MD5('3462509'), 'hector@empresa.com', '1313', NULL, NULL, NULL, '', 'active', 1, 3, 20, 1, 14),
-('4898121', 'Hernan Sandro', 'Aquino Churqui', '4898121', MD5('4898121'), 'hernan@empresa.com', '1306', NULL, NULL, NULL, '', 'active', 1, 3, 21, 1, 9),
-('5989585', 'Janela Ingrid', 'Vargas Vasquez', '5989585', MD5('5989585'), 'janela@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 22, 1, 5),
-('8324905', 'Javier Edson', 'Zapana', '8324905', MD5('8324905'), 'javier@empresa.com', '1312', NULL, NULL, NULL, 'La Paz Bolivia', 'active', 1, 1, 23, 1, 12),
-('3487543', 'Juan', 'Ramos', '3487543', MD5('3487543'), 'juan@empresa.com', '1503', NULL, NULL, NULL, '', 'active', 1, 3, 24, 1, 1),
-('9209737', 'Karina', 'Saravia Flores', '9209737', MD5('9209737'), 'karina@empresa.com', '1303', NULL, NULL, NULL, '', 'active', 1, 2, 25, 1, 7),
-('9070081', 'Katerine', 'Isidro Queso', '9070081', MD5('9070081'), 'katerine@empresa.com', '1202', NULL, NULL, NULL, '', 'active', 1, 2, 26, 1, 3),
-('5762453', 'Luis Alberto', 'Fernandez Orellana', '5762453', MD5('5762453'), 'luis.alberto@empresa.com', '1311', NULL, NULL, NULL, '', 'active', 1, 1, 27, 1, 12),
-('4791448', 'Luis', 'Arequipa Apaza', '4791448', MD5('4791448'), 'luis.arequipa@empresa.com', '1405', NULL, NULL, NULL, '', 'active', 1, 2, 28, 1, 3),
-('4909891', 'Luis Daniel', 'Amezaga Bejarano', '4909891', MD5('4909891'), 'luis.daniel@empresa.com', '1602', NULL, NULL, NULL, '', 'active', 1, 3, 29, 1, 6),
-('2220126', 'Luis', 'Oporto Ordoñez', '2220126', MD5('2220126'), 'luis.oporto@empresa.com', '1101', NULL, NULL, NULL, '', 'active', 1, 3, 30, 1, 1),
-('4741713', 'Mabel', 'Belzu García', '4741713', MD5('4741713'), 'mabel@empresa.com', '1404', NULL, NULL, NULL, '', 'active', 1, 3, 31, 1, 4),
-('2630284', 'Magali', 'Macias Bohorquez', '2630284', MD5('2630284'), 'magali@empresa.com', '1304', NULL, NULL, NULL, '', 'active', 1, 3, 32, 1, 8),
-('5078422', 'Magali', 'Uribe García', '5078422', MD5('5078422'), 'magali.uribe@empresa.com', '1323', NULL, NULL, NULL, '', 'active', 1, 3, 33, 1, 10),
-('6185880', 'Maria Alejandra', 'Cornejo Valdez', '5078422', MD5('6185880'), 'maria.alejandra@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 34, 9, 5),
-('6081183', 'Maria Delina', 'Carvajal Duran', '5078422', MD5('6081183'), 'maria.delina@empresa.com', '1309', NULL, NULL, NULL, '', 'active', 1, 3, 35, 1, 8),
-('4376835', 'Maria Guadalupe', 'Quintanilla Quelca', '5078422', MD5('4376835'), 'maria.guadalupe@empresa.com', '1319', NULL, NULL, NULL, '', 'active', 1, 3, 36, 1, 13),
-('3375385', 'Mariana', 'Vargas Toro','3375385', MD5('3375385'), 'mariana@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 37, 9, 5),
-('5974311', 'Marianela', 'España Mita','5974311', MD5('5974311'), 'marianela@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 38, 9, 5),
-('4844721', 'Mario', 'Marca Honorio', '4844721', MD5('4844721'), 'mario@empresa.com', '1315', NULL, NULL, NULL, '', 'active', 1, 3, 39, 1, 14),
-('3484596', 'Marisabel', 'Zubieta Salas','3484596', MD5('3484596'), 'marisabel@empresa.com', '1317', NULL, NULL, NULL, '', 'active', 1, 3, 40, 1, 7),
-('4878229', 'Mary Carmen', 'Molina Ergueta','4878229', MD5('4878229'), 'mary.carmen@empresa.com', '1504', NULL, NULL, NULL, '', 'active', 1, 3, 41, 1, 5),
-('6144712', 'Mauricio Fernando', 'Castillo Arratia', '6144712', MD5('6144712'), 'mauricio@empresa.com', '1603', NULL, NULL, NULL, '', 'active', 1, 3, 42, 1, 6),
-('6783260', 'Melina Maribel', 'Maldonado Rios', '6783260', MD5('6783260'), 'melina@empresa.com', '1602', NULL, NULL, NULL, '', 'active', 1, 3, 43, 1, 6),
-('8412357', 'Patricia', 'Humana Lluta', '8412357', MD5('8412357'), 'patricia@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 45, 1, 7),
-('3336972', 'Pavel', 'Pérez Armata','3336972',MD5('3336972'), 'pavel@empresa.com', '1201', NULL, NULL, NULL, '', 'active', 1, 3, 46, 1, 3),
-('4262272', 'Ramiro', 'Marquez Gallardo','4262272', MD5('4262272'), 'ramiro@empresa.com', '1604', NULL, NULL, NULL, '', 'active', 1, 3, 47, 1, 6),
-('4842254', 'Reyna', 'Roque Ortega','4842254' ,MD5('4842254'), 'reyna@empresa.com', '0', NULL, NULL, NULL, '', 'active', 1, 3, 48, 1, 7),
-('2058080', 'Ricardo', 'Aguilar Asin','2058080',MD5('2058080'), 'ricardo@empresa.com', '1105', NULL, NULL, NULL, '', 'active', 1, 2, 49, 1, 2),
-('4918718', 'Rita Lizeth', 'Quiroz Suarez','4918718',MD5('4918718'), 'rita@empresa.com', '1102', NULL, NULL, NULL, '', 'active', 1, 3, 50, 1, 1),
-('3251519', 'Rolando', 'Paniagua Espinoza','3251519', MD5('3251519'), 'rolando@empresa.com', '1401', NULL, NULL, NULL, '', 'active', 1, 3, 51, 1, 4),
-('8264230', 'Rosa Adelaida','Quisper Calle','8264230',MD5('8264230'), 'rosa@empresa.com', '1307', NULL, NULL, NULL, '', 'active', 1, 2, 52, 1, 9),
-('6965732', 'Silvia', 'Condori Mamani', '6965732',MD5('6965732'), 'silvia@empresa.com', '1322', NULL, NULL, NULL, '', 'active', 1, 3, 53, 1, 1),
-('4985716', 'Silvia', 'Huanca Calle', '4985716', MD5('4985716'), 'silvia.huanca@empresa.com', '1316', NULL, NULL, NULL, '', 'active', 1, 3, 54, 1, 14),
-('4848702', 'Yussela Saleth', 'Goyzueta Ramos','4848702' ,MD5('4848702'), 'yussela@empresa.com', '1301', NULL, NULL, NULL, '', 'active', 1, 3, 57, 1, 7),
-('6102450', 'Waldo', 'Vaca Alvarez', '6102450',MD5('6102450'), 'waldo@empresa.com', '1407', NULL, NULL, NULL, '', 'active', 1, 3, 58, 1, 4);
+('Juan', 'Pérez', 'juanp', MD5('password123'), 'activo', 1, 1, 23, 1, 12);
 
 
+
+CREATE TABLE `family_members` (
+    `family_member_id` INT NOT NULL AUTO_INCREMENT,
+    `user_id` INT NOT NULL, -- Relación con el usuario
+    `relationship` VARCHAR(50) NOT NULL, -- Relación (padre, madre, hermano, etc.)
+    `first_name` VARCHAR(50) NOT NULL,
+    `lastname_father` varchar(50) NOT NULL, -- Apellido paterno
+    `lastname_mother` varchar(50) NOT NULL, -- Apellido materno
+    `gender` ENUM('M', 'F') NOT NULL,
+    `birth_date` DATE NOT NULL,
+    `birth_place` VARCHAR(100) NOT NULL, -- Lugar de nacimiento
+    `document_type` VARCHAR(50) DEFAULT NULL, -- Tipo de documento
+    `document_number` VARCHAR(20) DEFAULT NULL, -- Número de documento
+    PRIMARY KEY (`family_member_id`),
+    FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `educational_background` (
+    `education_id` INT NOT NULL AUTO_INCREMENT,
+    `user_id` INT NOT NULL, -- Relación con el usuario
+    `education_level` VARCHAR(50) NOT NULL, -- Nivel educativo (bachiller, licenciatura, etc.)
+    `institution` VARCHAR(100) NOT NULL, -- Nombre de la institución
+    `year_completed` YEAR DEFAULT NULL, -- Año de finalización
+    `degree_obtained` TINYINT(1) NOT NULL DEFAULT 0, -- 1 para título obtenido
+    `location` VARCHAR(100) NOT NULL, -- Lugar de la institución
+    PRIMARY KEY (`education_id`),
+    FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `work_experience` (
+    `work_id` INT NOT NULL AUTO_INCREMENT,
+    `user_id` INT NOT NULL, -- Relación con el usuario
+    `institution_name` VARCHAR(100) NOT NULL,
+    `position` VARCHAR(50) NOT NULL, -- Puesto desempeñado
+    `start_date` DATE NOT NULL, -- Fecha de inicio
+    `end_date` DATE DEFAULT NULL, -- Fecha de finalización
+    `reason_for_leaving` VARCHAR(100) DEFAULT NULL, -- Motivo de salida
+    PRIMARY KEY (`work_id`),
+    FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
