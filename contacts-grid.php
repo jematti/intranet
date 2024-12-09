@@ -268,11 +268,7 @@ $positions = mysqli_query($conn, "SELECT * FROM positions WHERE status = 1");
                                             <p><i class="fas fa-user icon"></i><strong>Nombre:</strong> <?php echo $row['firstname'] . ' ' . $row['lastname']; ?></p>
                                         </div>
                                         <?php } ?>
-                                        <?php if ($row['ci']) { ?>
-                                        <div class="col-md-6">
-                                            <p><i class="fas fa-id-card icon"></i><strong>Cédula de Identidad (CI):</strong> <?php echo $row['ci']; ?></p>
-                                        </div>
-                                        <?php } ?>
+                                     
                                         <?php if ($row['email']) { ?>
                                         <div class="col-md-6">
                                             <p><i class="fas fa-envelope icon"></i><strong>Correo Institucional:</strong> <?php echo $row['email']; ?></p>
@@ -298,16 +294,7 @@ $positions = mysqli_query($conn, "SELECT * FROM positions WHERE status = 1");
                                             <p><i class="fas fa-mobile-alt icon"></i><strong>Celular:</strong> <?php echo $row['cell_phone']; ?></p>
                                         </div>
                                         <?php } ?>
-                                        <?php if ($row['birth_date']) { ?>
-                                        <!-- <div class="col-md-6">
-                                            <p><i class="fas fa-birthday-cake icon"></i><strong>Fecha de Nacimiento:</strong> <?php echo $row['birth_date']; ?></p>
-                                        </div> -->
-                                        <?php } ?>
-                                        <?php if ($row['address']) { ?>
-                                        <div class="col-md-6">
-                                            <p><i class="fas fa-home icon"></i><strong>Dirección:</strong> <?php echo $row['address']; ?></p>
-                                        </div>
-                                        <?php } ?>
+                                        
                                     </div>
                                 </div>
                                 <div class="modal-footer">

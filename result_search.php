@@ -63,12 +63,10 @@ include_once 'app/complements/header.php';
                                                 data-user-id="' . $row['user_id'] . '" 
                                                 data-firstname="' . $row['firstname'] . '" 
                                                 data-lastname="' . $row['lastname'] . '" 
-                                                data-ci="' . $row['ci'] . '" 
                                                 data-email="' . $row['email'] . '" 
                                                 data-phone="' . $row['phone'] . '" 
                                                 data-cell-phone="' . $row['cell_phone'] . '" 
                                                 data-repository-phone="' . $row['repository_phone'] . '" 
-                                                data-address="' . $row['address'] . '" 
                                                 data-profile-img="' . ($row['profile_img'] ? 'uploads/profile_images/' . $row['profile_img'] : './assets/avatars/face.jpg') . '"
                                                 data-toggle="modal" 
                                                 data-target="#userModal">
@@ -107,9 +105,9 @@ include_once 'app/complements/header.php';
                     <div id="modal-name-container" class="col-md-6" style="display:none;">
                         <p><i class="fas fa-user icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Nombre:</strong> <span id="modal-fullname"></span></p>
                     </div>
-                    <div id="modal-ci-container" class="col-md-6" style="display:none;">
+                    <!-- <div id="modal-ci-container" class="col-md-6" style="display:none;">
                         <p><i class="fas fa-id-card icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Cédula de Identidad:</strong> <span id="modal-ci"></span></p>
-                    </div>
+                    </div> -->
                     <div id="modal-email-container" class="col-md-6" style="display:none;">
                         <p><i class="fas fa-envelope icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Correo Institucional:</strong> <span id="modal-email"></span></p>
                     </div>
@@ -122,9 +120,7 @@ include_once 'app/complements/header.php';
                     <div id="modal-cell-phone-container" class="col-md-6" style="display:none;">
                         <p><i class="fas fa-mobile-alt icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Celular:</strong> <span id="modal-cell-phone"></span></p>
                     </div>
-                    <div id="modal-address-container" class="col-md-6" style="display:none;">
-                        <p><i class="fas fa-home icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Dirección:</strong> <span id="modal-address"></span></p>
-                    </div>
+                   
                 </div>
             </div>
             <div class="modal-footer">
@@ -142,12 +138,11 @@ include_once 'app/complements/header.php';
             const fields = [
                 { id: 'modal-profile-img', value: this.dataset.profileImg || './assets/avatars/face.jpg', isSrc: true },
                 { id: 'modal-fullname', value: `${this.dataset.firstname || ''} ${this.dataset.lastname || ''}`.trim(), container: 'modal-name-container' },
-                { id: 'modal-ci', value: this.dataset.ci, container: 'modal-ci-container' },
                 { id: 'modal-email', value: this.dataset.email, container: 'modal-email-container' },
                 { id: 'modal-phone', value: this.dataset.phone, container: 'modal-phone-container' },
                 { id: 'modal-repository-phone', value: this.dataset.repositoryPhone, container: 'modal-repository-phone-container' },
                 { id: 'modal-cell-phone', value: this.dataset.cellPhone, container: 'modal-cell-phone-container' },
-                { id: 'modal-address', value: this.dataset.address, container: 'modal-address-container' }
+                
             ];
 
             fields.forEach(field => {
