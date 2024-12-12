@@ -47,32 +47,46 @@ if (isset($_SESSION['user_id'])) {
                 </li>
                 <!-- Botón de Noticias del día -->
                 <li class="nav-item">
-                    <button class="btn btn-light text-dark rounded-pill ml-2" data-toggle="modal" data-target="#newsModal">
-                        Noticias del día
+                    <button class="btn btn-info text-white font-weight-bold rounded-pill ml-2 shadow" data-toggle="modal" data-target="#newsModal" style="padding: 8px 10px; font-size: 16px;">
+                        <i class="fas fa-newspaper mr-2"></i> Noticias del día
                     </button>                    
+                </li>
+                <!-- Botón de Ver Tutorial -->
+                <li class="nav-item">
+                    <button class="btn btn-danger text-white font-weight-bold rounded-pill ml-2 shadow" data-toggle="modal" data-target="#videoModal" style="padding: 8px 10px; font-size: 16px;">
+                        <i class="fas fa-play-circle mr-2"></i> Ver Tutorial
+                    </button>
                 </li>
 
                 <?php if ($userLoggedIn): ?>
-                    <!-- Botón de administración si el usuario tiene el rol adecuado -->
+                    <!-- Botón de administración o perfil del usuario -->
                     <li class="nav-item ml-2">
                         <?php if ($role_id == 1 || $role_id == 2 || $role_id == 4): ?>
-                            <a class="btn btn-light rounded-pill text-dark" href="dashboard.php">Administración</a>
+                            <a class="btn btn-primary rounded-pill text-white font-weight-bold shadow" href="dashboard.php" style="padding: 8px 10px; font-size: 16px;">
+                                <i class="fas fa-tools mr-2"></i> Administración
+                            </a>
                         <?php else: ?>
-                            <a class="btn btn-light rounded-pill text-dark" href="perfil_user.php">Modificar Perfil</a>
+                            <a class="btn btn-success rounded-pill text-white font-weight-bold shadow" href="perfil_user.php" style="padding: 8px 10px; font-size: 16px;">
+                                <i class="fas fa-user-edit mr-2"></i> Modificar Perfil
+                            </a>
                         <?php endif; ?>
                     </li>
                     <!-- Dropdown del usuario logueado -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUser" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Usuario: <?php echo htmlspecialchars($userName); ?>
+                    <li class="nav-item dropdown ml-2">
+                        <a class="btn btn-light rounded-pill text-dark dropdown-toggle shadow" href="#" id="navbarDropdownUser" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding: 10px 20px; font-size: 16px;">
+                            <i class="fas fa-user-circle mr-2"></i> <?php echo htmlspecialchars($userName); ?>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownUser" style="background-color: #ffffff;">
-                            <a class="dropdown-item" href="logout.php">Salir</a>
+                        <div class="dropdown-menu dropdown-menu-right shadow" aria-labelledby="navbarDropdownUser" style="background-color: #ffffff; border-radius: 8px;">
+                            <a class="dropdown-item text-dark" href="logout.php">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Salir
+                            </a>
                         </div>
                     </li>
                 <?php else: ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="login.php" style="color: #ffffff;">Acceder</a>
+                    <li class="nav-item ml-2">
+                        <a class="btn btn-primary text-white font-weight-bold shadow" href="login.php" style="padding: 8px 10px; font-size: 16px;">
+                            <i class="fas fa-sign-in-alt mr-2"></i> Acceder
+                        </a>
                     </li>
                 <?php endif; ?>
             </ul>
@@ -80,6 +94,28 @@ if (isset($_SESSION['user_id'])) {
     </div>
 </nav>
 
+<!-- Modal para reproducir el video -->
+<div class="modal fade" id="videoModal" tabindex="-1" role="dialog" aria-labelledby="videoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(to right, #2c83c6, #1b5c8e);">
+                <h5 class="modal-title text-white" id="videoModalLabel">Tutorial: Manejo de la Intranet</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="background-color: #f9f9f9;">
+                <video controls class="w-100" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+                    <source src="assets/videos/intranet empleados.mp4" type="video/mp4">
+                    Tu navegador no soporta la reproducción de videos.
+                </video>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- CSS para el switcher de modo oscuro/claro -->
 <style>
