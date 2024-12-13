@@ -323,3 +323,16 @@ VALUES
 ('6102450', 'Waldo', 'Vaca Alvarez', '6102450',MD5('6102450'), 'waldo@empresa.com', '1407', NULL, NULL, NULL, '', 'active', 1, 3, 58, 1, 4);
 
 
+-- Ampliación de la tabla `audit_log` para incluir tipo de acción como login/logout
+CREATE TABLE IF NOT EXISTS `audit_log` (
+  `log_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL, -- Relación con la tabla `user`
+  `action` varchar(255) NOT NULL, -- Descripción de la acción realizada (login, logout, etc.)
+  `entity` varchar(100) DEFAULT NULL, -- Tabla o entidad afectada (puede ser NULL para login/logout)
+  `entity_id` int(11) DEFAULT NULL, -- ID del registro afectado (puede ser NULL para login/logout)
+  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha y hora del movimiento
+  `ip_address` varchar(45) DEFAULT NULL, -- Dirección IP del usuario
+  `details` TEXT DEFAULT NULL, -- Detalles adicionales del movimiento
+  PRIMARY KEY (`log_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

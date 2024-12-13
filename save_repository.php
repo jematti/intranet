@@ -1,6 +1,7 @@
 <?php
 // Incluir la conexión a la base de datos
 include("conexion_db.php");
+session_start(); // Iniciar la sesión para acceder al ID del usuario
 
 // Verificar si el formulario fue enviado
 if (isset($_POST['save'])) {
@@ -14,10 +15,22 @@ if (isset($_POST['save'])) {
 
     // Ejecutar la consulta
     if (mysqli_query($conn, $sql)) {
-        // Si se inserta correctamente, redirigir a la página de repositorios con un mensaje de éxito
+        // Obtener el ID del repositorio recién agregado
+        $repository_id = mysqli_insert_id($conn);
+
+        // Registrar en la bitácora
+        if (isset($_SESSION['user_id'])) {
+            $user_id = $_SESSION['user_id'];
+            $action = "add";
+            $details = "Se agregó un nuevo repositorio: $repository_name en $building ($department)";
+            $log_sql = "INSERT INTO audit_log (user_id, action, entity, entity_id, details) VALUES ('$user_id', '$action', 'repositories', '$repository_id', '$details')";
+            mysqli_query($conn, $log_sql);
+        }
+
+        // Redirigir a la página de repositorios con un mensaje de éxito
         header("Location: repositories.php?message=Repositorio agregado exitosamente");
     } else {
-        // Si hay un error, redirigir a la página de repositorios con un mensaje de error
+        // Si hay un error, mostrar el mensaje
         echo "Error: " . mysqli_error($conn);
     }
 }

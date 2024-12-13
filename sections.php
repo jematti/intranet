@@ -181,6 +181,7 @@ function toggleStatus(sectionId) {
         });
     }
 }
+
 </script>
 </body>
 </html>

@@ -20,10 +20,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     $stmt->fetch();
 
     if ($stmt->num_rows > 0) {
+        // Iniciar sesión
         session_regenerate_id(true);
         $_SESSION['user_id'] = $user_id;
         $_SESSION['user_name'] = $firstname . ' ' . $lastname;
         $_SESSION['role_id'] = $role_id;
+
+        // Registrar evento de login en la bitácora
+        $stmt_log = $conn->prepare("INSERT INTO `audit_log` (`user_id`, `action`, `ip_address`, `details`) VALUES (?, 'login', ?, 'Inicio de sesión exitoso')");
+        $stmt_log->bind_param("is", $user_id, $_SERVER['REMOTE_ADDR']);
+        $stmt_log->execute();
+        $stmt_log->close();
+
         header("Location: index.php");
         exit();
     } else {
