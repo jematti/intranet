@@ -37,25 +37,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
         $img_size = $_FILES['profile_img']['size'];
         $img_ext = strtolower(pathinfo($img_name, PATHINFO_EXTENSION));
         $allowed_ext = array("jpg", "jpeg", "png", "gif");
-
+    
         if (in_array($img_ext, $allowed_ext)) {
             if ($img_size < 5000000) {
                 $new_img_name = uniqid("IMG-", true) . '.' . $img_ext;
-                $img_upload_path = 'intranet/uploads/profile_images/' . $new_img_name;
-
-                // Elimina la imagen anterior si no es la predeterminada
-                $old_image_query = "SELECT profile_img FROM user WHERE user_id = '$user_id'";
-                $old_image_result = mysqli_query($conn, $old_image_query);
-                $old_image = mysqli_fetch_assoc($old_image_result)['profile_img'];
-
-                if (move_uploaded_file($img_tmp_name, $_SERVER['DOCUMENT_ROOT'] . '/' . $img_upload_path)) {
+                $img_upload_path = 'uploads/profile_images/' . $new_img_name;
+                $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/profile_images/';
+                
+                // Crear carpeta si no existe
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0777, true);
+                }
+    
+                // Mover archivo
+                if (move_uploaded_file($img_tmp_name, $upload_dir . $new_img_name)) {
                     $profile_img = $new_img_name;
                     $img_update_query = "UPDATE user SET profile_img = '$profile_img' WHERE user_id = '$user_id'";
                     mysqli_query($conn, $img_update_query);
+                } else {
+                    $error = "No se pudo guardar la imagen. Verifica permisos.";
                 }
+            } else {
+                $error = "El tamaño del archivo debe ser menor a 5 MB.";
             }
+        } else {
+            $error = "Formato de archivo no permitido. Usa JPG, JPEG, PNG o GIF.";
         }
     }
+    
 
     // Actualizar datos personales
     $query = "UPDATE user 
@@ -168,13 +177,18 @@ $user = mysqli_fetch_assoc($result);
                     <!-- Sección del avatar -->
                     <div class="text-center">
                         <div class="avatar-container">
-                            <?php if ($user['profile_img']) { ?>
-                                <img src="/intranet/uploads/profile_images/<?php echo $user['profile_img']; ?>" alt="Imagen de Perfil">
+                            <?php 
+                            $img_path = '/uploads/profile_images/' . $user['profile_img'];
+                            $default_img = './assets/avatars/face.jpg';
+                            if (!empty($user['profile_img']) && file_exists($_SERVER['DOCUMENT_ROOT'] . $img_path)) { 
+                            ?>
+                                <img src="<?php echo $img_path; ?>" alt="Imagen de Perfil">
                             <?php } else { ?>
-                                <img src="./assets/avatars/face.jpg" alt="Default Profile Image">
+                                <img src="<?php echo $default_img; ?>" alt="Default Profile Image">
                             <?php } ?>
                         </div>
                     </div>
+
 
                     <!-- Formulario para editar perfil -->
                     <form method="POST" action="" enctype="multipart/form-data">
