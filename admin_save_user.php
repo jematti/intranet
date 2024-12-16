@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $insert_query = "INSERT INTO `user` (`ci`, `firstname`, `lastname`, `username`, `password`, `email`, 
                                               `personal_email`, `cell_phone`, 
                                               `repository_phone`, 
-                                              `phone`, `birth_date`, `address`, `position_id`, `repository_id`, 
+                                              `phone`, `position_id`, `repository_id`, 
                                               `section_id`, `role_id`, `status`, `active_status`, `profile_img`)
                          VALUES ('$ci', '$firstname', '$lastname', '$username', '$password_hash', '$email', 
                                  '$personal_email', '$cell_phone', '$repository_phone', '$phone', $position_id, $repository_id, $section_id, $role_id, 
