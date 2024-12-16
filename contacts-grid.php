@@ -291,7 +291,7 @@ $positions = mysqli_query($conn, "SELECT * FROM positions WHERE status = 1");
                                         <?php } ?>
                                         <?php if ($row['cell_phone']) { ?>
                                         <div class="col-md-6">
-                                            <p><i class="fas fa-mobile-alt icon"></i><strong>Celular:</strong> <?php echo $row['cell_phone']; ?></p>
+                                            <p><i class="fas fa-mobile-alt icon"></i><strong>Celular (Corporativo):</strong> <?php echo $row['cell_phone']; ?></p>
                                         </div>
                                         <?php } ?>
                                         

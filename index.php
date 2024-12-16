@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <div class="container mt-4">
     <div class="row">
         <div class="col-6 col-sm-4 col-md-3 text-center mb-3">
-            <a href="contacts-grid.php" class="text-decoration-none text-dark">
+            <a href="contacts-grid.php" target="_blank" class="text-decoration-none text-dark">
                 <div class="card">
                     <div class="card-body">
                         <img src="images/contactos.png" alt="Contactos" class="card-img-top" style="width:60%; margin: 0 auto;">
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </a>
         </div>
         <div class="col-6 col-sm-4 col-md-3 text-center mb-3">
-            <a href="https://mail.fundacionculturalbcb.gob.bo/" class="text-decoration-none text-dark">
+            <a href="https://mail.fundacionculturalbcb.gob.bo/" target="_blank" class="text-decoration-none text-dark">
                 <div class="card">
                     <div class="card-body">
                         <img src="images/correo.jpg" alt="Correo Institucional" class="card-img-top" style="width:60%; margin: 0 auto;">
@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </a>
         </div>
         <div class="col-6 col-sm-4 col-md-3 text-center mb-3">
-            <a href="https://sif.fcbcb.gob.bo/" class="text-decoration-none text-dark">
+            <a href="https://sif.fcbcb.gob.bo/" target="_blank" class="text-decoration-none text-dark">
                 <div class="card">
                     <div class="card-body">
                         <img src="images/facturacion.jpg" alt="Sistema de Facturación" class="card-img-top" style="width:60%; margin: 0 auto;">
@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </a>
         </div>
         <div class="col-6 col-sm-4 col-md-3 text-center mb-3">
-            <a href="https://tiendavirtual.fcbcb.gob.bo/" class="text-decoration-none text-dark">
+            <a href="https://tiendavirtual.fcbcb.gob.bo/" target="_blank" class="text-decoration-none text-dark">
                 <div class="card">
                     <div class="card-body">
                         <img src="images/biblioteca.jpg" alt="Biblioteca Digital" class="card-img-top" style="width:60%; margin: 0 auto;">

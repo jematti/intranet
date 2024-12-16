@@ -26,7 +26,7 @@ include_once 'app/complements/header.php';
                                 <th>Foto</th>
                                 <th>Nombre</th>
                                 <th>Ubicación</th>
-                                <th>Teléfono</th>
+                                <th>Teléfono (Interno)</th>
                                 <th>Ciudad</th>
                                 <th>Puesto</th>
                                 <th>Acciones</th>
@@ -118,7 +118,7 @@ include_once 'app/complements/header.php';
                         <p><i class="fas fa-phone icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Teléfono Repositorio:</strong> <span id="modal-repository-phone"></span></p>
                     </div>
                     <div id="modal-cell-phone-container" class="col-md-6" style="display:none;">
-                        <p><i class="fas fa-mobile-alt icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Celular:</strong> <span id="modal-cell-phone"></span></p>
+                        <p><i class="fas fa-mobile-alt icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Celular (Corporativo):</strong> <span id="modal-cell-phone"></span></p>
                     </div>
                    
                 </div>

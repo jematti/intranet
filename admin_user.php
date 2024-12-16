@@ -172,10 +172,7 @@ if ($role_id == 1) {
                                         <label for="landline_phone">Teléfono Fijo</label>
                                         <input type="text" name="landline_phone" class="form-control" id="landline_phone"/>
                                     </div> -->
-                                    <div class="form-group">
-                                        <label for="repository_phone">Teléfono Fijo del Repositorio</label>
-                                        <input type="text" name="repository_phone" class="form-control" id="repository_phone"/>
-                                    </div>
+                                    
                                     <div class="form-group">
                                         <label for="profile_img">Imagen de Perfil (Opcional)</label>
                                         <input type="file" name="profile_img" class="form-control" id="profile_img" accept="image/*">
@@ -200,13 +197,14 @@ if ($role_id == 1) {
                                         <input type="text" name="phone" class="form-control" id="phone"/>
                                     </div>
                                     <div class="form-group">
+                                        <label for="repository_phone">Teléfono Fijo del Repositorio</label>
+                                        <input type="text" name="repository_phone" class="form-control" id="repository_phone"/>
+                                    </div>
+                                    <!-- <div class="form-group">
                                         <label for="birth_date">Fecha de Nacimiento</label>
                                         <input type="date" name="birth_date" class="form-control" id="birth_date"/>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="address">Dirección</label>
-                                        <input type="text" name="address" class="form-control" id="address"/>
-                                    </div>
+                                     -->
                                     
                                 </div>
                             </div>

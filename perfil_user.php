@@ -25,8 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
     $cell_phone = mysqli_real_escape_string($conn, $_POST['cell_phone']);
     $phone = mysqli_real_escape_string($conn, $_POST['phone']);
     $birth_date = mysqli_real_escape_string($conn, $_POST['birth_date']);
-    $address = mysqli_real_escape_string($conn, $_POST['address']);
-    $landline_phone = mysqli_real_escape_string($conn, $_POST['landline_phone']);
+    
     $repository_phone = mysqli_real_escape_string($conn, $_POST['repository_phone']);
 
     $profile_img = NULL;
@@ -62,8 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
     $query = "UPDATE user 
               SET ci = '$ci', firstname = '$firstname', lastname = '$lastname', email = '$email',
                   personal_email = '$personal_email', cell_phone = '$cell_phone', phone = '$phone', 
-                  birth_date = '$birth_date', address = '$address',
-                  landline_phone = '$landline_phone', repository_phone = '$repository_phone'
+                  birth_date = '$birth_date', repository_phone = '$repository_phone'
               WHERE user_id = '$user_id'";
     
     if (mysqli_query($conn, $query)) {
@@ -199,19 +197,20 @@ $user = mysqli_fetch_assoc($result);
                                         <label for="ci" class="form-label">Cédula de Identidad (CI)</label>
                                         <input type="text" class="form-control" id="ci" name="ci" value="<?php echo htmlspecialchars($user['ci']); ?>" required>
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    <!-- <div class="col-md-6 mb-3">
                                         <label for="birth_date" class="form-label">Fecha de Nacimiento</label>
                                         <input type="date" class="form-control" id="birth_date" name="birth_date" value="<?php echo htmlspecialchars($user['birth_date']); ?>">
+                                    </div> -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="firstname" class="form-label">Nombres</label>
+                                        <input type="text" id="firstname" name="firstname" class="form-control" value="<?php echo htmlspecialchars($user['firstname']); ?>" required>
                                     </div>
                                 </div>
 
                                 <div class="row">
+                                    
                                     <div class="col-md-6 mb-3">
-                                        <label for="firstname" class="form-label">Nombre</label>
-                                        <input type="text" id="firstname" name="firstname" class="form-control" value="<?php echo htmlspecialchars($user['firstname']); ?>" required>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="lastname" class="form-label">Apellido</label>
+                                        <label for="lastname" class="form-label">Apellidos</label>
                                         <input type="text" id="lastname" name="lastname" class="form-control" value="<?php echo htmlspecialchars($user['lastname']); ?>" required>
                                     </div>
                                 </div>
@@ -237,11 +236,11 @@ $user = mysqli_fetch_assoc($result);
 
                                 <div class="row">
                                     <div class="col-md-4 mb-3">
-                                        <label for="phone" class="form-label">Teléfono</label>
+                                        <label for="phone" class="form-label">Teléfono (Interno)</label>
                                         <input type="text" class="form-control" id="phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
                                     </div>
                                     <div class="col-md-4 mb-3">
-                                        <label for="cell_phone" class="form-label">Celular</label>
+                                        <label for="cell_phone" class="form-label">Celular (Corporativo)</label>
                                         <input type="text" class="form-control" id="cell_phone" name="cell_phone" value="<?php echo htmlspecialchars($user['cell_phone']); ?>">
                                     </div>
                                     <!-- <div class="col-md-4 mb-3">
@@ -254,10 +253,6 @@ $user = mysqli_fetch_assoc($result);
                                     <div class="col-md-6 mb-3">
                                         <label for="repository_phone" class="form-label">Teléfono Fijo del Repositorio</label>
                                         <input type="text" class="form-control" id="repository_phone" name="repository_phone" value="<?php echo htmlspecialchars($user['repository_phone']); ?>">
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="address" class="form-label">Dirección</label>
-                                        <input type="text" class="form-control" id="address" name="address" value="<?php echo htmlspecialchars($user['address']); ?>">
                                     </div>
                                 </div>
                             </div>
