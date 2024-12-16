@@ -54,9 +54,9 @@ include_once 'app/complements/header.php';
                             <!-- Botón de editar -->
                             <button class="btn btn-warning" data-toggle="modal" data-target="#edit_modal<?php echo $fetch['position_id'] ?>"><span class="glyphicon glyphicon-edit"></span> Editar</button>
                             <!-- Botón de habilitar/deshabilitar -->
-                            <button class="btn <?php echo $statusButtonClass; ?>" type="button" onclick="confirmTogglePositionStatus(<?php echo $fetch['position_id']; ?>, <?php echo $fetch['status']; ?>)">
+                            <!-- <button class="btn <?php echo $statusButtonClass; ?>" type="button" onclick="confirmTogglePositionStatus(<?php echo $fetch['position_id']; ?>, <?php echo $fetch['status']; ?>)">
                                 <?php echo $statusButtonText; ?>
-                            </button>
+                            </button> -->
                         </td>
                     </tr>
                     <!-- Modal para editar posición -->

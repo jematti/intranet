@@ -245,7 +245,7 @@ if ($role_id == 1) {
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="position_id">Posición <span class="text-danger">*</span></label>
+                                        <label for="position_id">Cargo <span class="text-danger">*</span></label>
                                         <select name="position_id" class="form-control" id="position_id" required>
                                             <option value="">Seleccione una posición</option>
                                             <?php

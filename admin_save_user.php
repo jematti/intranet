@@ -17,8 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // $landline_phone = mysqli_real_escape_string($conn, $_POST['landline_phone']);
     $repository_phone = mysqli_real_escape_string($conn, $_POST['repository_phone']);
     $phone = mysqli_real_escape_string($conn, $_POST['phone']);
-    $birth_date = mysqli_real_escape_string($conn, $_POST['birth_date']);
-    $address = mysqli_real_escape_string($conn, $_POST['address']);
+    //$birth_date = mysqli_real_escape_string($conn, $_POST['birth_date']);
+    //$address = mysqli_real_escape_string($conn, $_POST['address']);
     $position_id = intval($_POST['position_id']);
     $repository_id = intval($_POST['repository_id']);
     $section_id = intval($_POST['section_id']);
@@ -103,8 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                          SET `ci` = '$ci', `firstname` = '$firstname', `lastname` = '$lastname',
                              `username` = '$username', `email` = '$email', `personal_email` = '$personal_email', 
                              `cell_phone` = '$cell_phone',
-                             `repository_phone` = '$repository_phone', `phone` = '$phone', `birth_date` = '$birth_date',
-                             `address` = '$address', `position_id` = $position_id, `repository_id` = $repository_id, 
+                             `repository_phone` = '$repository_phone', `phone` = '$phone', `position_id` = $position_id, `repository_id` = $repository_id, 
                              `section_id` = $section_id, `role_id` = $role_id
                              $password_update
                              $profile_img_update
@@ -126,8 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                               `phone`, `birth_date`, `address`, `position_id`, `repository_id`, 
                                               `section_id`, `role_id`, `status`, `active_status`, `profile_img`)
                          VALUES ('$ci', '$firstname', '$lastname', '$username', '$password_hash', '$email', 
-                                 '$personal_email', '$cell_phone', '$repository_phone', '$phone', 
-                                 '$birth_date', '$address', $position_id, $repository_id, $section_id, $role_id, 
+                                 '$personal_email', '$cell_phone', '$repository_phone', '$phone', $position_id, $repository_id, $section_id, $role_id, 
                                  'active', 1, '$profile_img')";
         
         if (mysqli_query($conn, $insert_query)) {
