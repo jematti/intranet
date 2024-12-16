@@ -111,12 +111,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['change_password'])) {
 $query = "
     SELECT u.ci, u.firstname, u.lastname, u.email, u.personal_email, u.cell_phone, u.phone, u.birth_date, 
            u.address, u.landline_phone, u.repository_phone, u.profile_img, 
-           p.position_name, r.repository_name
+           p.position_name, r.repository_name, 
+           s.section_name -- Agregar el nombre de la sección
     FROM user u
     LEFT JOIN positions p ON u.position_id = p.position_id
     LEFT JOIN repositories r ON u.repository_id = r.repository_id
+    LEFT JOIN sections s ON u.section_id = s.section_id -- Agregar la relación con la tabla sections
     WHERE u.user_id = '$user_id'
 ";
+
 $result = mysqli_query($conn, $query);
 $user = mysqli_fetch_assoc($result);
 ?>
@@ -279,17 +282,41 @@ $user = mysqli_fetch_assoc($result);
                             </div>
                             <div class="card-body">
                                 <div class="row">
+                                    <!-- Cargo -->
                                     <div class="col-md-6 mb-3">
                                         <label for="position" class="form-label">Cargo</label>
-                                        <input type="text" class="form-control-plaintext" id="position" value="<?php echo htmlspecialchars($user['position_name']); ?>" readonly>
+                                        <input type="text" 
+                                            class="form-control-plaintext" 
+                                            id="position" 
+                                            value="<?php echo !empty($user['position_name']) ? htmlspecialchars($user['position_name']) : 'No asignado'; ?>" 
+                                            readonly>
                                     </div>
+                                    
+                                    <!-- Área Organizacional -->
                                     <div class="col-md-6 mb-3">
                                         <label for="repository" class="form-label">Área Organizacional</label>
-                                        <input type="text" class="form-control-plaintext" id="repository" value="<?php echo htmlspecialchars($user['repository_name']); ?>" readonly>
+                                        <input type="text" 
+                                            class="form-control-plaintext" 
+                                            id="repository" 
+                                            value="<?php echo !empty($user['repository_name']) ? htmlspecialchars($user['repository_name']) : 'No asignada'; ?>" 
+                                            readonly>
+                                    </div>
+                                </div>
+
+                                <!-- Unidad Organizacional o Sección -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="section" class="form-label">Unidad Organizacional</label>
+                                        <input type="text" 
+                                            class="form-control-plaintext" 
+                                            id="section" 
+                                            value="<?php echo !empty($user['section_name']) ? htmlspecialchars($user['section_name']) : 'No asignada'; ?>" 
+                                            readonly>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
 
                         <!-- Botón de Guardar Cambios -->
                         <div class="text-end">

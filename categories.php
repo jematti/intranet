@@ -33,7 +33,6 @@ if ($user_id) {
     }
 }
 ?>
-
 <!-- navegador principal -->
 <?php include 'app/complements/navbar-main.php'; ?>
 <!-- fin navegador principal -->
@@ -96,13 +95,30 @@ if ($user_id) {
             </thead>
             <tbody id="tableBody">
                 <?php
-                $query = mysqli_query($conn, "SELECT c.category_id, c.category_name, c.status, s.section_id, s.section_name, r.repository_id, r.repository_name 
-                                              FROM categories c 
-                                              JOIN sections s ON c.section_id = s.section_id 
-                                              JOIN repositories r ON s.repository_id = r.repository_id 
-                                              WHERE c.status IN (0, 1) 
-                                              AND r.repository_id = '$repository_id' 
-                                              AND r.status = 1") or die(mysqli_error($conn));
+                if (in_array($role_id, [2, 3])) {
+                    // Para roles 2 y 3: Filtrar por sección específica
+                    $query = mysqli_query($conn, "SELECT c.category_id, c.category_name, c.status, s.section_id, s.section_name, r.repository_id, r.repository_name 
+                                                FROM categories c 
+                                                JOIN sections s ON c.section_id = s.section_id 
+                                                JOIN repositories r ON s.repository_id = r.repository_id 
+                                                WHERE c.status IN (0, 1) 
+                                                AND r.repository_id = '$repository_id' 
+                                                AND s.section_id = '$section_id' 
+                                                AND r.status = 1") or die(mysqli_error($conn));
+                } elseif (in_array($role_id, [1, 4])) {
+                    // Para roles 1 y 4: Mostrar todas las categorías del repositorio
+                    $query = mysqli_query($conn, "SELECT c.category_id, c.category_name, c.status, s.section_id, s.section_name, r.repository_id, r.repository_name 
+                                                FROM categories c 
+                                                JOIN sections s ON c.section_id = s.section_id 
+                                                JOIN repositories r ON s.repository_id = r.repository_id 
+                                                WHERE c.status IN (0, 1) 
+                                                AND r.repository_id = '$repository_id' 
+                                                AND r.status = 1") or die(mysqli_error($conn));
+                } else {
+                    // Si no pertenece a ninguno de los roles especificados
+                    echo "<tr><td colspan='4' class='text-center'>No tienes permisos para ver las categorías.</td></tr>";
+                    return;
+                }
 
                 while ($fetch = mysqli_fetch_array($query)) {
                     $statusButtonClass = $fetch['status'] == 1 ? 'btn-danger' : 'btn-success';
