@@ -146,6 +146,10 @@ include_once 'app/complements/header.php';
 </div>
 </div>
 
+<?php
+include_once 'app/complements/footer.php';
+?>
+
 <!-- Scripts -->
 <?php include_once 'app/complements/footer.php'; ?>
 
@@ -219,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const fileTypeValue = fileType.value;
     const uploadedById = uploadedBy.value;
 
-    fetch(`search_docs.php?repository_id=${repositoryId}&section_id=${sectionId}&category_id=${categoryId}&keyword=${keyword}&date_from=${fromDate}&date_to=${toDate}&file_type=${fileTypeValue}&uploaded_by=${uploadedById}`)
+        fetch(`search_docs.php?repository_id=${repositoryId}&section_id=${sectionId}&category_id=${categoryId}&keyword=${keyword}&date_from=${fromDate}&date_to=${toDate}&file_type=${fileTypeValue}&uploaded_by=${uploadedById}`)
         .then(response => response.json())
         .then(data => {
             tableBody.innerHTML = '';
@@ -245,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 clearFilters();
             }
         });
-});
+    });
 
     // Función para limpiar los filtros
     clearBtn.addEventListener('click', function () {

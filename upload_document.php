@@ -3,6 +3,28 @@ require 'app/funcionts/admin/validator.php';
 include("conexion_db.php");
 include_once 'app/complements/header.php';
 ?>
+<style>
+    .progress {
+        width: 100%;
+        background-color: #f3f3f3; /* Color del fondo */
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin: 20px 0;
+        height: 25px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        width: 0%; /* Comienza vacío */
+        height: 100%;
+        background-color: #4caf50; /* Verde */
+        color: white;
+        text-align: center;
+        line-height: 25px; /* Alinea el texto verticalmente */
+        font-size: 14px;
+        transition: width 0.3s ease; /* Animación suave */
+    }
+</style>
 
 <!-- navegador principal -->
 <?php include 'app/complements/navbar-main.php' ?>
@@ -63,23 +85,25 @@ include_once 'app/complements/header.php';
                                         <strong>Subir Archivo</strong>
                                     </div>
                                     <div class="card-body">
+                                        <!-- Formulario para subir archivos -->
                                         <form action="save_file.php" method="post" enctype="multipart/form-data">
                                             <!-- Mostrar Área organizacional del usuario (no editable) -->
                                             <div class="form-group">
                                                 <label for="repository_name">Área organizacional</label>
-                                                <input type="text" id="repository_name" class="form-control" value="<?php echo $fetch['repository_name']; ?>" readonly>
+                                                <input type="text" id="repository_name" class="form-control" 
+                                                    value="<?php echo $fetch['repository_name']; ?>" readonly>
                                                 <input type="hidden" name="repository_id" value="<?php echo $fetch['repository_id']; ?>">
                                             </div>
 
                                             <!-- Unidad Organizacional -->
                                             <div class="form-group">
                                                 <label for="section_name">Unidad Organizacional</label>
-                                                <?php if ($fetch['role_id'] == 1 || $fetch['role_id'] == 4) { // 1 para Super Admin, 4 para Administrador Repositorio ?>
+                                                <?php if ($fetch['role_id'] == 1 || $fetch['role_id'] == 4) { ?>
                                                     <select id="section_id" name="section_id" class="form-control">
                                                         <option value="">Seleccione una Unidad Organizacional</option>
                                                         <?php
-                                                        // Cargar las secciones asociadas al repositorio
-                                                        $sections_query = mysqli_query($conn, "SELECT * FROM sections WHERE repository_id = '{$fetch['repository_id']}' AND status = 1") or die(mysqli_error($conn));
+                                                        $sections_query = mysqli_query($conn, 
+                                                            "SELECT * FROM sections WHERE repository_id = '{$fetch['repository_id']}' AND status = 1");
                                                         while ($section = mysqli_fetch_array($sections_query)) {
                                                             $selected = ($section['section_id'] == $fetch['section_id']) ? 'selected' : '';
                                                             echo "<option value='{$section['section_id']}' $selected>{$section['section_name']}</option>";
@@ -87,37 +111,49 @@ include_once 'app/complements/header.php';
                                                         ?>
                                                     </select>
                                                 <?php } else { ?>
-                                                    <input type="text" id="section_name" class="form-control" value="<?php echo $fetch['section_name']; ?>" readonly>
-                                                    <input type="hidden" id="section_id" name="section_id" value="<?php echo $fetch['section_id']; ?>">
+                                                    <input type="text" id="section_name" class="form-control" 
+                                                        value="<?php echo $fetch['section_name']; ?>" readonly>
+                                                    <input type="hidden" id="section_id" name="section_id" 
+                                                        value="<?php echo $fetch['section_id']; ?>">
                                                 <?php } ?>
                                             </div>
 
-                                            <!-- Selector de carpeta (obligatorio), solo carpeta activas -->
+                                            <!-- Selector de carpeta -->
                                             <div class="form-group">
                                                 <label for="category_id">Carpeta</label>
                                                 <select class="form-control" id="category_id" name="category_id" required>
                                                     <option value="">Seleccione una Carpeta</option>
                                                 </select>
                                             </div>
+                                                <!-- Campo para seleccionar archivo -->
+                                                <div class="form-group">
+                                                    <label for="fileUpload">Seleccione el archivo</label>
+                                                    <input type="file" class="form-control-file" id="fileUpload" name="fileUpload" required>
+                                                </div>
 
-                                            <!-- Campo para seleccionar archivo -->
-                                            <div class="form-group">
-                                                <label for="fileUpload">Seleccione el archivo</label>
-                                                <input type="file" class="form-control-file" id="fileUpload" name="fileUpload">
-                                            </div>
+                                                <!-- ID del usuario -->
+                                                <input type="hidden" name="user_id" value="<?php echo $fetch['user_id']; ?>">
 
-                                            <!-- Campo oculto para el ID del usuario -->
-                                            <input type="hidden" name="user_id" value="<?php echo $fetch['user_id'] ?>">
+                                                <!-- Barra de progreso -->
+                                                <div class="progress" id="uploadProgressContainer" style="display: none; height: 30px;">
+                                                    <div id="uploadProgressBar" 
+                                                        class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                                                        role="progressbar" style="width: 0%;" 
+                                                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                                        0%
+                                                    </div>
+                                                </div>
 
-                                            <!-- Botones de acción -->
-                                            <div class="text-center mt-4">
-                                                <button type="submit" class="btn btn-success">Guardar Archivo</button>
-                                                <button type="reset" class="btn btn-danger">Cancelar</button>
-                                            </div>
+                                                <!-- Botones de acción -->
+                                                <div class="form-group text-center mt-4">
+                                                    <button type="submit" id="submitBtn" class="btn btn-success">Guardar Archivo</button>
+                                                    <button type="reset" class="btn btn-danger">Cancelar</button>
+                                                </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
+
 
                         </div>
                     </div>
@@ -149,24 +185,39 @@ include_once 'app/complements/header.php';
                                             $statusButtonText = $file['status'] == 1 ? 'Deshabilitar' : 'Habilitar';
                                         ?>
                                         <tr class="del_file<?php echo $file['store_id']; ?>">
-                                            <!-- <td><?php echo substr($file['filename'], 0, 50); ?>...</td> -->
+                                            <!-- Mostrar el nombre del archivo -->
                                             <td><?php echo $file['filename']; ?></td>
+                                            <!-- Mostrar el tipo de archivo -->
                                             <td><?php echo $file['file_type']; ?></td>
+                                            <!-- Mostrar la fecha de subida -->
                                             <td><?php echo $file['date_uploaded']; ?></td>
+                                            <!-- Acción de archivo: Ver para videos, Descargar para otros archivos -->
                                             <td>
-                                                <a href="download.php?store_id=<?php echo $file['store_id']; ?>" class="btn btn-primary">
-                                                    <span class="glyphicon glyphicon-download"></span> Descargar
-                                                </a>
+                                                <?php if (strpos($file['file_type'], 'video/') === 0) { ?>
+                                                    <a href="view_video.php?store_id=<?php echo $file['store_id']; ?>" class="btn btn-info" target="_blank">
+                                                        <span class="glyphicon glyphicon-eye-open"></span> Ver
+                                                    </a>
+                                                <?php } else { ?>
+                                                    <a href="download.php?store_id=<?php echo $file['store_id']; ?>" class="btn btn-primary">
+                                                        <span class="glyphicon glyphicon-download"></span> Descargar
+                                                    </a>
+                                                <?php } ?>
                                             </td>
+                                            <!-- Botón de habilitar/deshabilitar -->
                                             <td>
                                                 <?php if ($file['status'] == 1) { ?>
-                                                    <button class="btn btn-danger" type="button" onclick="disableDocument(<?php echo $file['store_id']; ?>)">Deshabilitar</button>
+                                                    <button class="btn btn-danger" type="button" onclick="disableDocument(<?php echo $file['store_id']; ?>)">
+                                                        Deshabilitar
+                                                    </button>
                                                 <?php } else { ?>
-                                                    <button class="btn btn-success" type="button" onclick="enableDocument(<?php echo $file['store_id']; ?>)">Habilitar</button>
+                                                    <button class="btn btn-success" type="button" onclick="enableDocument(<?php echo $file['store_id']; ?>)">
+                                                        Habilitar
+                                                    </button>
                                                 <?php } ?>
                                             </td>
                                         </tr>
                                         <?php } ?>
+
                                 </tbody>
                             </table>
                         </div>
@@ -286,5 +337,103 @@ $('#section_id').on('change', function() {
     }
 });
 
+</script>
+
+
+<script>
+document.querySelector('form').addEventListener('submit', function (e) {
+    e.preventDefault(); // Prevenir el envío predeterminado del formulario
+
+    // Obtener elementos del DOM
+    const form = e.target;
+    const submitBtn = document.getElementById('submitBtn');
+    const progressContainer = document.getElementById('uploadProgressContainer');
+    const progressBar = document.getElementById('uploadProgressBar');
+    const fileInput = document.getElementById('fileUpload');
+    const file = fileInput.files[0]; // Obtener el archivo seleccionado
+
+    // Validar tamaño del archivo
+    const MIN_FILE_SIZE = 1024 * 100; // 100 KB como tamaño mínimo (ajústalo si lo deseas)
+
+    if (file.size < MIN_FILE_SIZE) {
+        // Si el archivo es pequeño, enviarlo directamente sin mostrar la barra
+        simpleUpload(form, submitBtn);
+        return;
+    }
+
+    // Mostrar la barra de progreso
+    submitBtn.disabled = true;
+    progressContainer.style.display = 'block';
+    progressBar.style.width = '0%';
+    progressBar.innerText = '0%';
+
+    // Crear objeto FormData
+    const formData = new FormData(form);
+
+    // Subir archivo con AJAX
+    const xhr = new XMLHttpRequest();
+
+    xhr.open('POST', form.action, true);
+
+    // Actualizar barra de progreso
+    xhr.upload.onprogress = function (event) {
+        if (event.lengthComputable) {
+            const percentComplete = Math.round((event.loaded / event.total) * 100);
+            progressBar.style.width = percentComplete + '%';
+            progressBar.innerText = percentComplete + '%';
+        }
+    };
+
+    // Manejar la respuesta del servidor
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            alert('Archivo subido exitosamente.');
+            window.location.reload();
+        } else {
+            alert('Error al subir el archivo.');
+        }
+
+        // Resetear la barra de progreso
+        progressContainer.style.display = 'none';
+        progressBar.style.width = '0%';
+        progressBar.innerText = '0%';
+        submitBtn.disabled = false;
+    };
+
+    xhr.onerror = function () {
+        alert('Error al conectar con el servidor.');
+        progressContainer.style.display = 'none';
+        submitBtn.disabled = false;
+    };
+
+    xhr.send(formData);
+});
+
+// Subida rápida sin barra de progreso
+function simpleUpload(form, submitBtn) {
+    const formData = new FormData(form);
+    const xhr = new XMLHttpRequest();
+
+    submitBtn.disabled = true;
+
+    xhr.open('POST', form.action, true);
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            alert('Archivo subido exitosamente.');
+            window.location.reload();
+        } else {
+            alert('Error al subir el archivo.');
+        }
+        submitBtn.disabled = false;
+    };
+
+    xhr.onerror = function () {
+        alert('Error al conectar con el servidor.');
+        submitBtn.disabled = false;
+    };
+
+    xhr.send(formData);
+}
 </script>
 

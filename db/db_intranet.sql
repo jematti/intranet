@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
 -- Crear tabla `storage` con relaciones a `user`, `repositories`, `sections` y `categories`
 CREATE TABLE IF NOT EXISTS `storage` (
   `store_id` int(11) NOT NULL AUTO_INCREMENT,
-  `filename` varchar(100) NOT NULL,
+  `filename` TEXT NOT NULL,
   `file_type` varchar(20) NOT NULL,
   `date_uploaded` varchar(100) NOT NULL,
   `user_id` int(11) NOT NULL, -- Relación con la tabla `user`

@@ -87,24 +87,44 @@ include_once 'app/complements/header.php';
                                                                     </thead>
                                                                     <tbody>";
 
-                                                                // Obtener archivos habilitados por categoría
+                                                               // Obtener archivos habilitados por categoría
                                                                 $query_files = mysqli_query($conn, "SELECT * FROM `storage` WHERE `category_id` = {$categoryId} AND `status` = 1");
                                                                 if (mysqli_num_rows($query_files) > 0) {
                                                                     while ($file = mysqli_fetch_assoc($query_files)) {
-                                                                        echo "
-                                                                        <tr>
-                                                                            <td>{$file['filename']}</td>
-                                                                            <td>{$file['date_uploaded']}</td>
-                                                                            <td>
-                                                                                <button class='btn btn-success btn-sm' onclick='confirmDownload({$file['store_id']})'>
-                                                                                    Descargar <i class='fas fa-download'></i>
-                                                                                </button>
-                                                                            </td>
-                                                                        </tr>";
+                                                                        $fileType = $file['file_type'];
+                                                                        $fileName = htmlspecialchars($file['filename'], ENT_QUOTES, 'UTF-8'); // Evitar inyección de código
+                                                                        $storeId = intval($file['store_id']); // Sanitizar ID
+                                                                        $dateUploaded = htmlspecialchars($file['date_uploaded'], ENT_QUOTES, 'UTF-8'); // Evitar inyección de código
+
+                                                                        // Verificar si el archivo es un video
+                                                                        if (strpos($fileType, 'video/') === 0) {
+                                                                            echo "
+                                                                            <tr>
+                                                                                <td>{$fileName}</td>
+                                                                                <td>{$dateUploaded}</td>
+                                                                                <td>
+                                                                                    <button class='btn btn-info btn-sm' onclick='openVideo(\"{$storeId}\")'>
+                                                                                        Ver <i class='fas fa-eye'></i>
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>";
+                                                                        } else {
+                                                                            echo "
+                                                                            <tr>
+                                                                                <td>{$fileName}</td>
+                                                                                <td>{$dateUploaded}</td>
+                                                                                <td>
+                                                                                    <button class='btn btn-success btn-sm' onclick='confirmDownload({$storeId})'>
+                                                                                        Descargar <i class='fas fa-download'></i>
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>";
+                                                                        }
                                                                     }
                                                                 } else {
                                                                     echo "<tr><td colspan='3' class='text-muted'>No hay archivos disponibles.</td></tr>";
                                                                 }
+
 
                                                         echo "
                                                                     </tbody>
@@ -152,12 +172,18 @@ include_once 'app/complements/footer.php';
         });
     });
 
+    // Función para abrir un video en una nueva pestaña
+    function openVideo(storeId) {
+        window.open('view_video.php?store_id=' + storeId, '_blank');
+    }
+
     // Función para confirmar la descarga
     function confirmDownload(storeId) {
         if (confirm('¿Estás seguro de que deseas descargar este archivo?')) {
             window.location.href = 'download.php?store_id=' + storeId;
         }
     }
+
 </script>
 
 <!-- CSS para animaciones, estilo diferenciado y archivos -->
