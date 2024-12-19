@@ -99,6 +99,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </a>
         </div>
         <div class="col-6 col-sm-4 col-md-3 text-center mb-3">
+            <a href="http://192.168.1.3/sigec-2024/" target="_blank" class="text-decoration-none text-dark">
+                <div class="card">
+                    <div class="card-body">
+                        <img src="images/correspondencia.jpg" alt="Sistema de Correspondencia" class="card-img-top" style="width:60%; margin: 0 auto;">
+                        <p class="card-text mt-3">Sistema de Correspondencia 2024</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-sm-4 col-md-3 text-center mb-3">
             <a href="documents_tree.php" class="text-decoration-none text-dark">
                 <div class="card">
                     <div class="card-body">
