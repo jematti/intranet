@@ -158,12 +158,22 @@ include_once 'app/complements/header.php';
                         </div>
                     </div>
                 </div>
+                
 
                 <!-- Sección de archivos subidos -->
                 <div class="col-12">
                     <div class="card shadow mb-4">
-                        <div class="card-header">
+                        <div class="card-header d-flex justify-content-between align-items-center">
                             <strong class="card-title">Archivos Subidos</strong>
+                            <!-- Barra de búsqueda de archivos -->
+                            <div class="input-group" style="width: 50%;">
+                                <input type="text" id="searchInput" class="form-control" placeholder="Buscar archivos por nombre...">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         <div class="card-body">
                             <table id="table" class="table table-bordered">
@@ -173,7 +183,9 @@ include_once 'app/complements/header.php';
                                         <th>Tipo</th>
                                         <th>Fecha de subida</th>
                                         <th>Descargar</th>
+                                        <th>Editar</th>
                                         <th>Estado</th>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody id="file-table-body">
@@ -203,6 +215,12 @@ include_once 'app/complements/header.php';
                                                     </a>
                                                 <?php } ?>
                                             </td>
+                                            <!-- Botón de editar nombre de documento -->
+                                            <td>
+                                                <button class="btn btn-warning"  type="button" onclick="openEditModal(<?php echo $file['store_id']; ?>, '<?php echo $file['filename']; ?>')">
+                                                     Editar
+                                                </button>
+                                            </td>
                                             <!-- Botón de habilitar/deshabilitar -->
                                             <td>
                                                 <?php if ($file['status'] == 1) { ?>
@@ -215,6 +233,7 @@ include_once 'app/complements/header.php';
                                                     </button>
                                                 <?php } ?>
                                             </td>
+                                            
                                         </tr>
                                         <?php } ?>
 
@@ -246,6 +265,31 @@ include_once 'app/complements/header.php';
                 </div>
                 <!-- Fin del modal -->
 
+                <!-- Modal para editar nombre del archivo -->
+                <div class="modal fade" id="editFilenameModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <form id="editFilenameForm">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Editar Nombre del Archivo</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" id="store_id" name="store_id"> <!-- ID del archivo -->
+                                    <div class="form-group">
+                                        <label for="new_filename">Nuevo Nombre del Archivo</label>
+                                        <input type="text" id="new_filename" name="new_filename" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                                    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </div>
     </div>
@@ -269,9 +313,9 @@ $(document).ready(function() {
             success: function(response) {
                 var len = response.length;
                 $("#category_id").empty();
-                $("#category_id").append("<option value=''>Seleccione una Categoría</option>");
+                $("#category_id").append("<option value=''>Seleccione una Carpeta</option>");
                 for (var i = 0; i < len; i++) {
-                    if (response[i]['status'] == 1) { // Verificar si la categoría está activa
+                    if (response[i]['status'] == 1) { // Verificar si la carpeta está activa
                         var id = response[i]['category_id'];
                         var name = response[i]['category_name'];
                         $("#category_id").append("<option value='" + id + "'>" + name + "</option>");
@@ -341,6 +385,7 @@ $('#section_id').on('change', function() {
 
 
 <script>
+// Script para la animacion de carga del archivo subido a la intranet
 document.querySelector('form').addEventListener('submit', function (e) {
     e.preventDefault(); // Prevenir el envío predeterminado del formulario
 
@@ -437,3 +482,57 @@ function simpleUpload(form, submitBtn) {
 }
 </script>
 
+<script>
+//Editar Nombre del archivo
+// Función para abrir el modal y prellenar los valores actuales
+function openEditModal(storeId, currentFilename) {
+    document.getElementById('store_id').value = storeId; // Asignar el ID del archivo
+    document.getElementById('new_filename').value = currentFilename; // Asignar el nombre actual
+    $('#editFilenameModal').modal('show'); // Mostrar el modal
+}
+
+// Manejar el envío del formulario para editar el nombre del archivo
+document.getElementById('editFilenameForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    // Enviar la actualización al servidor usando AJAX
+    fetch('update_filename.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(result => {
+        if (result === 'success') {
+            alert('Nombre del archivo actualizado correctamente.');
+            $('#editFilenameModal').modal('hide');
+            window.location.reload();
+        } else if (result === 'error_file') {
+            alert('Error al renombrar el archivo en el servidor.');
+        } else if (result === 'file_not_found') {
+            alert('El archivo no fue encontrado en el servidor.');
+        } else {
+            alert('Error al actualizar el nombre del archivo.');
+        }
+    })
+    .catch(() => alert('Error al conectar con el servidor.'));
+});
+</script>
+
+<script>
+    // Filtrar archivos en tiempo real
+    document.getElementById('searchInput').addEventListener('input', function () {
+        const searchValue = this.value.toLowerCase();
+        const tableRows = document.querySelectorAll('#file-table-body tr');
+
+        tableRows.forEach(row => {
+            const fileName = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+            if (fileName.includes(searchValue)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
