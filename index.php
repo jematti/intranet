@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="card">
                     <div class="card-body">
                         <img src="images/correspondencia.jpg" alt="Sistema de Correspondencia" class="card-img-top" style="width:60%; margin: 0 auto;">
-                        <p class="card-text mt-3">Sistema de Correspondencia 2024</p>
+                        <p class="card-text mt-3">Sistema de Correspondencia</p>
                     </div>
                 </div>
             </a>
