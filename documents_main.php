@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 data.forEach(file => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${file.filename.substring(0, 30)}...</td>
+                        <td>${file.filename}...</td>
                         <td>${file.file_type}</td>
                         <td>${file.date_uploaded}</td>
                         <td>${file.uploaded_by}</td> <!-- Aquí se usa el campo correcto -->
