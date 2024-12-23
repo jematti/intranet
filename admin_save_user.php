@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (in_array($img_ext, $allowed_ext)) {
             if ($img_size < 5000000) { // Limitar tamaño a 5MB
                 $new_img_name = uniqid("IMG-", true) . '.' . $img_ext;
-                $img_upload_path = 'intranet/uploads/profile_images/' . $new_img_name;
+                $img_upload_path = 'uploads/profile_images/' . $new_img_name;
 
                 // Si es una actualización de usuario, eliminar la imagen anterior
                 if (isset($_POST['user_id']) && !empty($_POST['user_id'])) {
@@ -56,8 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $profile_img = $new_img_name;
 
                         // Elimina la imagen anterior si no es la imagen por defecto
-                        if ($old_image && $old_image != 'intranet/uploads/profile_images/default.jpg') {
-                            $old_image_path = $_SERVER['DOCUMENT_ROOT'] . '/intranet/uploads/profile_images/' . $old_image;
+                        if ($old_image && $old_image != 'uploads/profile_images/default.jpg') {
+                            $old_image_path = $_SERVER['DOCUMENT_ROOT'] . 'uploads/profile_images/' . $old_image;
                             if (file_exists($old_image_path)) {
                                 unlink($old_image_path);
                             }
