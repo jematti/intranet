@@ -63,7 +63,8 @@ include_once 'app/complements/header.php';
                                                 data-user-id="' . $row['user_id'] . '" 
                                                 data-firstname="' . $row['firstname'] . '" 
                                                 data-lastname="' . $row['lastname'] . '" 
-                                                data-email="' . $row['email'] . '" 
+                                                data-email="' . $row['email'] . '"
+                                                data-personal-email="' . $row['personal_email'] . '" 
                                                 data-phone="' . $row['phone'] . '" 
                                                 data-cell-phone="' . $row['cell_phone'] . '" 
                                                 data-repository-phone="' . $row['repository_phone'] . '" 
@@ -111,6 +112,9 @@ include_once 'app/complements/header.php';
                     <div id="modal-email-container" class="col-md-6" style="display:none;">
                         <p><i class="fas fa-envelope icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Correo Institucional:</strong> <span id="modal-email"></span></p>
                     </div>
+                    <div id="modal-email-personal-container" class="col-md-6" style="display:none;">
+                        <p><i class="fas fa-envelope icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Correo Personal:</strong> <span id="modal-personal-email"></span></p>
+                    </div>
                     <div id="modal-phone-container" class="col-md-6" style="display:none;">
                         <p><i class="fas fa-phone icon" style="margin-right: 8px; color: #4A90E2;"></i><strong>Teléfono (Interno):</strong> <span id="modal-phone"></span></p>
                     </div>
@@ -139,6 +143,7 @@ include_once 'app/complements/header.php';
                 { id: 'modal-profile-img', value: this.dataset.profileImg || './assets/avatars/face.jpg', isSrc: true },
                 { id: 'modal-fullname', value: `${this.dataset.firstname || ''} ${this.dataset.lastname || ''}`.trim(), container: 'modal-name-container' },
                 { id: 'modal-email', value: this.dataset.email, container: 'modal-email-container' },
+                { id: 'modal-personal-email', value: this.dataset.personalEmail, container: 'modal-email-personal-container' },
                 { id: 'modal-phone', value: this.dataset.phone, container: 'modal-phone-container' },
                 { id: 'modal-repository-phone', value: this.dataset.repositoryPhone, container: 'modal-repository-phone-container' },
                 { id: 'modal-cell-phone', value: this.dataset.cellPhone, container: 'modal-cell-phone-container' },
