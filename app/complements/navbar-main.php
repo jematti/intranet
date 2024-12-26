@@ -96,7 +96,7 @@ if (isset($_SESSION['user_id'])) {
 
 <!-- Modal para reproducir el video -->
 <div class="modal fade" id="videoModal" tabindex="-1" role="dialog" aria-labelledby="videoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header" style="background: linear-gradient(to right, #2c83c6, #1b5c8e);">
                 <h5 class="modal-title text-white" id="videoModalLabel">Tutorial: Manejo de la Intranet</h5>
@@ -106,7 +106,7 @@ if (isset($_SESSION['user_id'])) {
             </div>
             <div class="modal-body" style="background-color: #f9f9f9;">
                 <video controls class="w-100" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
-                    <source src="assets/videos/intranet empleados.mp4" type="video/mp4">
+                    <source src="assets/videos/intranet_empleados.mp4" type="video/mp4">
                     Tu navegador no soporta la reproducción de videos.
                 </video>
             </div>
