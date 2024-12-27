@@ -21,7 +21,19 @@ include_once 'app/complements/header.php';
         <div class="alert alert-info">
             <h3>Cargos/Posiciones</h3>
         </div>
-        
+        <?php
+        // Mostrar mensaje de sesión si existe
+        if (isset($_SESSION['message'])): ?>
+            <div class="alert alert-<?php echo $_SESSION['message_type']; ?> text-center" role="alert">
+                <?php echo $_SESSION['message']; ?>
+            </div>
+        <?php
+            // Limpiar mensaje después de mostrarlo
+            unset($_SESSION['message']);
+            unset($_SESSION['message_type']);
+        endif;
+        ?>
+
         <!-- Barra de búsqueda -->
         <div class="form-group">
             <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre del cargo/posición" onkeyup="searchTable()">
@@ -52,7 +64,11 @@ include_once 'app/complements/header.php';
                         <td><?php echo $fetch['position_name'] ?></td>
                         <td>
                             <!-- Botón de editar -->
-                            <button class="btn btn-warning" data-toggle="modal" data-target="#edit_modal<?php echo $fetch['position_id'] ?>"><span class="glyphicon glyphicon-edit"></span> Editar</button>
+                            <button class="btn btn-warning" 
+                                    onclick="openEditModal('<?php echo $fetch['position_id']; ?>', '<?php echo addslashes($fetch['position_name']); ?>')">
+                                <span class="glyphicon glyphicon-edit"></span> Editar
+                            </button>
+
                             <!-- Botón de habilitar/deshabilitar -->
                             <!-- <button class="btn <?php echo $statusButtonClass; ?>" type="button" onclick="confirmTogglePositionStatus(<?php echo $fetch['position_id']; ?>, <?php echo $fetch['status']; ?>)">
                                 <?php echo $statusButtonText; ?>
@@ -95,12 +111,15 @@ include_once 'app/complements/header.php';
             <div class="modal-content">
                 <form id="position_form" method="POST" action="save_position.php">
                     <div class="modal-header">
-                        <h4 class="modal-title">Agregar Cargo/Posición</h4>
+                        <h4 class="modal-title">Agregar/Editar Cargo/Posición</h4>
                     </div>
                     <div class="modal-body">
+                        <!-- Campo oculto para el ID del cargo/posición -->
+                        <input type="hidden" name="position_id" id="position_id" value="">
+
                         <div class="form-group">
                             <label>Nombre del Cargo/Posición</label>
-                            <input type="text" name="position_name" class="form-control" required>
+                            <input type="text" name="position_name" id="position_name" class="form-control" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -152,6 +171,14 @@ function searchTable() {
         }
     });
 }
+function openEditModal(position_id, position_name) {
+    document.getElementById('position_id').value = position_id;
+    document.getElementById('position_name').value = position_name;
+
+    // Mostrar el modal de edición
+    $('#form_modal').modal('show');
+}
+
 </script>
 </body>
 </html>

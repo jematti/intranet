@@ -172,15 +172,24 @@ function openEditModal(button) {
     // Abrir el modal
     $('#form_modal').modal('show');
 }
-
 // Función para habilitar/deshabilitar la sección
 function toggleStatus(sectionId) {
     if (confirm('¿Está seguro de que desea cambiar el estado de esta unidad organizacional?')) {
         $.post('toggle_section_status.php', { section_id: sectionId }, function(response) {
-            window.location.reload();
+            console.log("Respuesta del servidor:", response); // Verifica qué devuelve
+            if (response.success) {
+                alert(response.message);
+                window.location.reload();
+            } else {
+                alert('Error: ' + response.message);
+            }
+        }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('Error:', textStatus, errorThrown, jqXHR.responseText);
+            alert(`Error al conectar con el servidor: ${textStatus}`);
         });
     }
 }
+
 
 </script>
 </body>

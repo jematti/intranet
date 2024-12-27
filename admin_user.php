@@ -43,7 +43,6 @@ if ($role_id == 1) {
     <div id="content">
         <br /><br /><br />
         <div class="alert alert-info"><h3>Usuarios</h3></div>
-        
         <!-- Barra de búsqueda -->
         <div class="form-group">
             <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o CI" onkeyup="searchTable()">

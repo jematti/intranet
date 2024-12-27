@@ -11,7 +11,7 @@ if (isset($_FILES['fileUpload'])) {
     $file_type = $_FILES['fileUpload']['type'];
     $file_temp = $_FILES['fileUpload']['tmp_name'];
     $date = date("Y-m-d, h:i A", strtotime("+8 HOURS")); // Fecha de subida
-    
+
     // Ruta de almacenamiento
     $location = "files/" . $user_id . "/" . $file_name;
 
@@ -45,34 +45,59 @@ if (isset($_FILES['fileUpload'])) {
                 $stmt_insert->bind_param("sssiiiii", $file_name, $file_type, $date, $user_id, $repository_id, $section_id, $category_id, $user_id);
 
                 if ($stmt_insert->execute()) {
-                    // Mostrar alerta de éxito y redirigir
-                    echo "<script>alert('Archivo subido exitosamente.'); window.location.href = 'upload_document.php';</script>";
-                    exit();
+                    // Obtener el ID del archivo recién insertado
+                    $new_file_id = $stmt_insert->insert_id;
+
+                    // Registrar la acción en la tabla de auditoría
+                    $ip_address = $_SERVER['REMOTE_ADDR'];
+                    $action = "add";
+                    $entity = "storage";
+                    $details = "Archivo subido: $file_name";
+
+                    $audit_query = "INSERT INTO `audit_log` (user_id, action, entity, entity_id, details, ip_address) 
+                                    VALUES (?, ?, ?, ?, ?, ?)";
+                    $stmt_audit = $conn->prepare($audit_query);
+                    $stmt_audit->bind_param("ississ", $user_id, $action, $entity, $new_file_id, $details, $ip_address);
+                    
+                    if ($stmt_audit->execute()) {
+                        echo "<script>alert('Archivo subido exitosamente. Auditoría registrada.'); window.location.href = 'upload_document.php';</script>";
+                    } else {
+                        echo "<script>alert('Archivo subido, pero no se pudo registrar en la auditoría: " . $stmt_audit->error . "'); window.location.href = 'upload_document.php';</script>";
+                    }
+
+                    $stmt_audit->close();
                 } else {
-                    // Mostrar alerta de error al guardar en la base de datos
                     echo "<script>alert('Error al guardar la información en la base de datos: " . $stmt_insert->error . "'); window.history.back();</script>";
                 }
 
                 $stmt_insert->close();
             } else {
-                // Mostrar alerta de error si el user_id no existe
                 echo "<script>alert('El user_id proporcionado no existe.'); window.history.back();</script>";
             }
 
             $stmt_check_user->close();
         } else {
-            // Mostrar alerta de error si el category_id no existe
             echo "<script>alert('El category_id proporcionado no existe.'); window.history.back();</script>";
         }
 
         $stmt_check->close();
     } else {
-        // Mostrar alerta de error al mover el archivo
+        // Registrar en la tabla de auditoría el intento fallido
+        $ip_address = $_SERVER['REMOTE_ADDR'];
+        $action = "add";
+        $entity = "storage";
+        $details = "Error al mover el archivo: $file_name";
+
+        $audit_query = "INSERT INTO `audit_log` (user_id, action, entity, details, ip_address) 
+                        VALUES (?, ?, ?, ?, ?)";
+        $stmt_audit = $conn->prepare($audit_query);
+        $stmt_audit->bind_param("issis", $user_id, $action, $entity, $details, $ip_address);
+        $stmt_audit->execute();
+        $stmt_audit->close();
+
         echo "<script>alert('Error al mover el archivo al directorio de almacenamiento.'); window.history.back();</script>";
     }
 } else {
-    // Mostrar alerta si no se recibió ningún archivo
     echo "<script>alert('No se recibió ningún archivo.'); window.history.back();</script>";
 }
-
 ?>

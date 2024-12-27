@@ -492,32 +492,43 @@ function openEditModal(storeId, currentFilename) {
 }
 
 // Manejar el envío del formulario para editar el nombre del archivo
-document.getElementById('editFilenameForm').addEventListener('submit', function(e) {
+document.getElementById('editFilenameForm').addEventListener('submit', function (e) {
     e.preventDefault();
 
     const formData = new FormData(this);
 
-    // Enviar la actualización al servidor usando AJAX
     fetch('update_filename.php', {
         method: 'POST',
         body: formData
     })
     .then(response => response.text())
     .then(result => {
-        if (result === 'success') {
-            alert('Nombre del archivo actualizado correctamente.');
-            $('#editFilenameModal').modal('hide');
-            window.location.reload();
-        } else if (result === 'error_file') {
-            alert('Error al renombrar el archivo en el servidor.');
-        } else if (result === 'file_not_found') {
-            alert('El archivo no fue encontrado en el servidor.');
-        } else {
-            alert('Error al actualizar el nombre del archivo.');
+        switch (result) {
+            case 'success':
+                alert('Nombre del archivo actualizado correctamente.');
+                window.location.reload();
+                break;
+            case 'error_user':
+                alert('Error: Usuario no autenticado.');
+                break;
+            case 'error_file':
+                alert('Error: No se pudo renombrar el archivo en el servidor.');
+                break;
+            case 'file_not_found':
+                alert('Error: Archivo no encontrado.');
+                break;
+            case 'error_db':
+                alert('Error: No se pudo actualizar el nombre del archivo en la base de datos.');
+                break;
+            default:
+                alert('Error desconocido.');
         }
     })
     .catch(() => alert('Error al conectar con el servidor.'));
 });
+
+
+
 </script>
 
 <script>

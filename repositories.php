@@ -50,7 +50,10 @@ include_once 'app/complements/header.php';
                             <!-- Botón de editar -->
                             <button class="btn btn-warning" data-toggle="modal" data-target="#edit_modal<?php echo $fetch['repository_id'] ?>"><span class="glyphicon glyphicon-edit"></span> Editar</button>
                             <!-- Botón de habilitar/deshabilitar -->
-                            <button class="btn <?php echo $statusButtonClass; ?>" type="button" onclick="confirmToggleRepositoryStatus(<?php echo $fetch['repository_id']; ?>, <?php echo $fetch['status']; ?>)">
+                            <button 
+                                class="btn <?php echo $statusButtonClass; ?>" 
+                                type="button" 
+                                onclick="toggleRepositoryStatus(<?php echo $fetch['repository_id']; ?>, <?php echo $fetch['status']; ?>)">
                                 <?php echo $statusButtonText; ?>
                             </button>
                         </td>
@@ -130,24 +133,33 @@ include_once 'app/complements/footer.php';
 ?>
 
 <script>
-function confirmToggleRepositoryStatus(repositoryId, currentStatus) {
+function toggleRepositoryStatus(repositoryId, currentStatus) {
     const action = currentStatus == 1 ? 'deshabilitar' : 'habilitar';
+
     if (confirm(`¿Está seguro de que desea ${action} este Área organizacional?`)) {
-        toggleRepositoryStatus(repositoryId, currentStatus);
+        $.ajax({
+            url: 'toggle_repository_status.php',
+            type: 'POST',
+            data: { repository_id: repositoryId, status: currentStatus },
+            dataType: 'json',
+            success: function(response) {
+                console.log("Respuesta del servidor:", response); // Para depuración
+                if (response.success) {
+                    alert(response.message); // Muestra el mensaje devuelto por el servidor
+                    window.location.reload(); // Recarga la página tras el éxito
+                } else {
+                    alert('Error: ' + (response.message || 'Ocurrió un error desconocido.'));
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Error en la solicitud:', textStatus, errorThrown, jqXHR.responseText);
+                alert(`Error al conectar con el servidor: ${textStatus}\nDetalles: ${jqXHR.responseText}`);
+            }
+        });
     }
 }
 
-function toggleRepositoryStatus(repositoryId, currentStatus) {
-    // Enviar solicitud AJAX para cambiar el estado del repositorio
-    $.post('toggle_repository_status.php', { repository_id: repositoryId, status: currentStatus }, function(response) {
-        if (response.success) {
-            // Recargar la página para reflejar el cambio
-            window.location.reload();
-        } else {
-            alert('Error al cambiar el estado del Área organizacional.');
-        }
-    }, 'json');
-}
+
 </script>
 </body>
 </html>
