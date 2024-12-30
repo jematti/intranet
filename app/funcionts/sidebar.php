@@ -46,6 +46,13 @@ $role_id = isset($_SESSION['role_id']) ? $_SESSION['role_id'] : null;
         <?php if ($role_id == 1): ?>
             <p class="text-muted nav-heading mt-4 mb-1"><span>Administración</span></p>
             <ul class="navbar-nav flex-fill w-100 mb-2">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="audit_log.php">
+                        <i class="fe fe-calendar fe-16"></i>
+                        <span class="ml-3 item-text">Bitacora</span>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="repositories.php">
                         <i class="fe fe-calendar fe-16"></i>
